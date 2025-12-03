@@ -1,0 +1,14 @@
+#pass input:focus-visible {
+  outline: none !important;
+}
+#pass:focus-visible,
+#pass:focus-within:active {
+  border: none !important;
+  outline: none;
+}
+
+#pass:focus-visible,
+#pass:focus-within {
+    border: 1px solid !important;
+  /* outline: none; */
+}
