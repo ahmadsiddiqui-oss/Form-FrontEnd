@@ -9,26 +9,26 @@ function MainPage() {
       <h1 style={styles.title}>Library Management</h1>
 
       <div style={styles.grid}>
-        <button style={styles.btn} onClick={() => navigate("/author")}>
+        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/author")}>
           ➕ Create Author
         </button>
 
-        <button style={styles.btn} onClick={() => navigate("/book")}>
+        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/book")}>
           ➕ Create Book
         </button>
 
-        <button style={styles.btn} onClick={() => navigate("/updateAuthor")}>
+        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/updateAuthor")}>
           📄 Authors Listing...!
         </button>
 
-        <button style={styles.btn} onClick={() => navigate("/updateBook")}>
+        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/updateBook")}>
           📄 Books Listing...!
         </button>
         {/* <button style={{backgroundColor: ""}} onClick={() => navigate("/login")}>
           LogIn Page...!
         </button> */}
         <button
-          style={styles.btn}
+    style={{...styles.btn, backgroundColor: "tan"}}
           onClick={() => {
             localStorage.removeItem("auth");
             navigate("/login");
