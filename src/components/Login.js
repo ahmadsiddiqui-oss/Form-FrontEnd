@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import "./login.css";
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -48,7 +47,6 @@ function Login() {
           required
         />
         <div
-          id="pass"
           style={{
             display: "flex",
             margin: "0px",
@@ -66,10 +64,10 @@ function Login() {
             value={credentials.password}
             onChange={handleChange}
             style={{
-              padding: styles.input.padding,
-              borderRadius: "5px",
+              ...styles.input,
+              // borderRadius: "5px",
               border: "none",
-              width: "calc(100% - 2.5rem)",
+              width: "100%",
             }}
             required
           />
