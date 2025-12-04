@@ -12,7 +12,7 @@ function AuthorsTable() {
   const [authors, setAuthors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAuthor, setSelectedAuthor] = useState(null);
-  const [authorForm, setAuthorForm] = useState({ name: "", email: "" });
+  // const [authorForm, setAuthorForm] = useState({ name: "", email: "" });
   // const [errors, setErrors] = useState("");
 
   const authorUpdateSchema = yup.object().shape({
@@ -30,7 +30,7 @@ function AuthorsTable() {
     formState: { errors },
   } = useForm({
     resolver: yupResolver(authorUpdateSchema),
-    mode:'onChange'
+    mode: "onChange",
   });
   // Fetch authors
   useEffect(() => {
@@ -48,35 +48,32 @@ function AuthorsTable() {
   }, []);
 
   // Sync form when a new author is selected
-useEffect(() => {
-  if (selectedAuthor) {
-    reset({
-      name: selectedAuthor.name || "",
-      email: selectedAuthor.email || "",
-    });
-  }
-}, [selectedAuthor, reset]);
+  useEffect(() => {
+    if (selectedAuthor) {
+      reset({
+        name: selectedAuthor.name || "",
+        email: selectedAuthor.email || "",
+      });
+    }
+  }, [selectedAuthor, reset]);
 
-
-  const handleUpdate = async () => {
+  const handleUpdate = async (data) => {
     if (!selectedAuthor) return;
     try {
-      const valid = await authorUpdateSchema.validate(authorForm, {
-        abortEarly: false,
-      });
-      console.log("valid", valid);
       const res = await axios.put(
         `http://localhost:5000/api/authorRoutes/${selectedAuthor.id}`,
-        authorForm
+        data
       );
-      const updatedAuthor = res.data || { ...selectedAuthor, ...authorForm };
+      const updatedAuthor = res.data || { ...selectedAuthor, ...data };
       setAuthors((prev) =>
         prev.map((a) => (a.id === selectedAuthor.id ? updatedAuthor : a))
       );
       setSelectedAuthor(null); // clear selection
+      alert("Author updated successfully..!");
     } catch (err) {
       console.log(err);
       console.log("err", err?.toString()?.split(": ")[1]);
+      alert("Failed to update book: " + err.message);
     }
   };
   console.log(errors, getValues());
@@ -162,23 +159,17 @@ useEffect(() => {
           modalId="authorModal"
           title="Edit Author"
           body={
-            <form onSubmit={handleSubmit(handleUpdate)}>
+            <form>
               <div className="mb-3">
                 <label className="form-label">Name</label>
-                <input
-                  {...register("name")}
-                  className="form-control"
-                />
+                <input {...register("name")} className="form-control" />
                 {errors.name && (
                   <span className="text-danger">{errors.name.message}</span>
                 )}
               </div>
               <div className="mb-3">
                 <label className="form-label">Email</label>
-                <input
-                  {...register("email")}
-                  className="form-control"
-                />
+                <input {...register("email")} className="form-control" />
                 {errors.email && (
                   <span className="text-danger">{errors.email.message}</span>
                 )}
@@ -187,7 +178,7 @@ useEffect(() => {
           }
           onClose={() => setSelectedAuthor(null)}
           onCancel={() => setSelectedAuthor(null)}
-          onSubmit={handleUpdate}
+          onSubmit={handleSubmit(handleUpdate)}
           submitText="Save Changes"
           cancelText="Close"
         />
