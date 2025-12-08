@@ -1,37 +1,71 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function MainPage() {
   const navigate = useNavigate();
+   const handleLogout = async (e) => {
+  const Token =  localStorage.getItem("authToken");
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/userRoutes/logout`,
+      {},
+         {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+        },
+      }
+      );
+      console.log(res)
+        localStorage.removeItem("auth");
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("user");
+        navigate("/login"); // redirect after login
+    } catch (err) {
+      console.log(err.response.data);
+      alert(err.response?.data?.error || "Login failed");
+    }
+  };
 
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Library Management</h1>
 
       <div style={styles.grid}>
-        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/author")}>
+        <button
+          style={{ ...styles.btn, backgroundColor: "turquoise" }}
+          onClick={() => navigate("/author")}
+        >
           ➕ Create Author
         </button>
 
-        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/book")}>
+        <button
+          style={{ ...styles.btn, backgroundColor: "turquoise" }}
+          onClick={() => navigate("/book")}
+        >
           ➕ Create Book
         </button>
 
-        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/updateAuthor")}>
+        <button
+          style={{ ...styles.btn, backgroundColor: "turquoise" }}
+          onClick={() => navigate("/updateAuthor")}
+        >
           📄 Authors Listing...!
         </button>
 
-        <button style={{...styles.btn, backgroundColor: "turquoise"}} onClick={() => navigate("/updateBook")}>
+        <button
+          style={{ ...styles.btn, backgroundColor: "turquoise" }}
+          onClick={() => navigate("/updateBook")}
+        >
           📄 Books Listing...!
         </button>
         {/* <button style={{backgroundColor: ""}} onClick={() => navigate("/login")}>
           LogIn Page...!
         </button> */}
         <button
-    style={{...styles.btn, backgroundColor: "tan"}}
+          style={{ ...styles.btn, backgroundColor: "tan" }}
           onClick={() => {
-            localStorage.removeItem("auth");
-            navigate("/login");
+            handleLogout();
           }}
         >
           LogOut...!

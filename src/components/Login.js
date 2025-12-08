@@ -22,8 +22,11 @@ function Login() {
         "http://localhost:5000/api/userRoutes/login",
         credentials
       );
+      console.log(res.data);
       if (res.data.user) {
-        localStorage.setItem("auth", "true"); // used by ProtectedRoute
+        localStorage.setItem("auth", "true");
+        localStorage.setItem("authToken", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/main"); // redirect after login
       }
     } catch (err) {
@@ -79,12 +82,22 @@ function Login() {
           </span>
         </div>
 
-        <button type="submit" style={{...styles.button, fontWeight: "bolder" }}>
+        <button
+          type="submit"
+          style={{ ...styles.button, fontWeight: "bolder" }}
+        >
           Login
         </button>
         <p style={{ textAlign: "center", marginTop: "10px" }}>
           I don't have an account?{" "}
-          <Link to="/" style={{ color: "#007bff", textDecoration: "none", fontWeight: "bolder" }}>
+          <Link
+            to="/"
+            style={{
+              color: "#007bff",
+              textDecoration: "none",
+              fontWeight: "bolder",
+            }}
+          >
             Sign Up.
           </Link>
         </p>

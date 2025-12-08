@@ -8,6 +8,8 @@ import AuthorsTable from "./components/updateAuthor";
 import ProtectedRoute from "./components/ProtectedRoute"; // import it
 import Login from "./components/Login";
 import Signup from "./components/signUp";
+import ForgotPassword from "./components/ForgetPassword";
+import ResetPassword from "./components/ResetPassword";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         {/* PUBLIC ROUTES */}
         <Route path="/" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* PROTECTED ROUTES */}
         <Route
