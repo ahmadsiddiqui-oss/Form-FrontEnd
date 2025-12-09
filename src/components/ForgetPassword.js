@@ -24,7 +24,6 @@ function ForgotPassword() {
   return (
     <div style={{ width: "400px", margin: "50px auto" }}>
       <h2>Forgot Password</h2>
-
       <form onSubmit={handleSubmit}>
         <label>Email:</label>
         <input

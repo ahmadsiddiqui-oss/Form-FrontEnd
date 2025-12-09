@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import ForgotPassword from "./ForgetPassword";
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -99,6 +100,20 @@ function Login() {
             }}
           >
             Sign Up.
+          </Link>
+        </p>
+        <p>
+          <Link
+            onSubmit={ForgotPassword}
+            to="/forgot-password"
+            style={{
+              color: "#f80808ff",
+              textDecoration: "none",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            ForgetPassword..?
           </Link>
         </p>
       </form>

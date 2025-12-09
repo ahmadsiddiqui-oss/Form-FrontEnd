@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import ForgotPassword from "./ForgetPassword";
 
 function Signup() {
   const navigate = useNavigate();
@@ -107,17 +106,6 @@ function Signup() {
             Login.
           </Link>
         </p>
-        <Link
-          onSubmit={ForgotPassword}
-          to="/forgot-password"
-          style={{
-            color: "#007bff",
-            textDecoration: "none",
-            fontWeight: "bolder",
-          }}
-        >
-          ForgetPassword..?
-        </Link>
       </form>
     </div>
   );
