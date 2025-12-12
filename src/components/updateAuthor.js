@@ -76,7 +76,7 @@ function AuthorsTable() {
   console.log(errors, getValues());
 
   const handleDelete = async (id) => {
-    console.log(id, "id errorrrrr");
+    console.log(id, "id <<Error>>");
     if (!window.confirm("Are you sure you want to delete this author?")) return;
     try {
       await api.delete(`/authorRoutes/${id}`);
@@ -96,7 +96,7 @@ function AuthorsTable() {
           style={{
             display: "flex",
             padding: "10px 25px",
-            backgroundColor: "peachpuff",
+            backgroundColor: "peachPuff",
             border: "none",
             marginLeft: "186px",
             borderRadius: "5px",

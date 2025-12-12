@@ -25,7 +25,7 @@ function CreateBookForm() {
 
   // --- Auto Fill Published Date with Local Timezone ---
   useEffect(() => {
-    const localDate = new Date().toISOString().slice(0, 16); // yyyy-mm-ddThh:mm
+    const localDate = new Date().toISOString().slice(0, 16);
     setFormData((prev) => ({ ...prev, publishedDate: localDate }));
   }, []);
 
@@ -172,7 +172,7 @@ function CreateBookForm() {
         <button
           style={{
             padding: "10px 25px",
-            backgroundColor: "springgreen",
+            backgroundColor: "springGreen",
             border: "none",
             marginLeft: "186px",
             borderRadius: "5px",

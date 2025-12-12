@@ -20,15 +20,15 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const res = await api.post("/userRoutes/signup", user);
+      const res = await api.post("/authRoutes/signup", user);
 
       if (res.status === 201) {
         alert("User created successfully!");
         navigate("/main"); // Redirect to login page
       }
     } catch (err) {
-      console.log(err.response.data);
-      alert(err.response?.data?.error || "Signup failed");
+      console.log(err.message);
+      alert(err.response?.data?.error || err.message || "Signup failed");
     }
   };
 

@@ -10,14 +10,29 @@ import Login from "./components/Login";
 import Signup from "./components/signUp";
 import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
+import PublicRoute from "./components/PublicRoute";
 
 function App() {
   return (
     <Router>
       <Routes>
         {/* PUBLIC ROUTES */}
-        <Route path="/" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Signup />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
 

@@ -6,7 +6,7 @@ function MainPage() {
   const navigate = useNavigate();
   const handleLogout = async (e) => {
     try {
-      const res = await api.post(`/userRoutes/logout`);
+      const res = await api.post(`/authRoutes/logout`);
       console.log(res);
       localStorage.removeItem("auth");
       localStorage.removeItem("authToken");

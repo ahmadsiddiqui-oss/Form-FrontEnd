@@ -21,10 +21,10 @@ function Login() {
 
     try {
       const res = await api.post(
-        "/userRoutes/login",
+        "/authRoutes/login",
         credentials
       );
-      console.log(res.data);
+      console.log(res.data, "resData.");
       if (res.data.user) {
         localStorage.setItem("auth", "true");
         localStorage.setItem("authToken", res.data.token);
@@ -33,7 +33,7 @@ function Login() {
       }
     } catch (err) {
       console.log(err.response.data);
-      alert(err.response?.data?.error || "Login failed");
+      alert("Frontend Error..!" + err.response?.data?.error  || "Login failed");
     }
   };
 

@@ -8,7 +8,7 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/userRoutes/forgot-password", {
+      const res = await api.post("/authRoutes/forgot-password", {
         email,
       });
       res.sendStatus === 200 &&

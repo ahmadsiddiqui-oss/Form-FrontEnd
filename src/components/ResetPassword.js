@@ -13,7 +13,7 @@ function ResetPassword() {
     e.preventDefault();
 
     try {
-      const res = await api.post(`/userRoutes/reset-password/${token}`, {
+      const res = await api.post(`/authRoutes/reset-password/${token}`, {
         password,
       });
       res.sendStatus === 200 && setMessage("Password reset successful!");
