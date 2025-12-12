@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import ForgotPassword from "./ForgetPassword";
+import api from "./axios";
+
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -19,8 +20,8 @@ function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/userRoutes/login",
+      const res = await api.post(
+        "/userRoutes/login",
         credentials
       );
       console.log(res.data);

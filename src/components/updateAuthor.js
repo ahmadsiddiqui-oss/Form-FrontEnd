@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import CustomModal from "./modal";
 import Button from "react-bootstrap/Button";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import api from "./axios";
 
 function AuthorsTable() {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ function AuthorsTable() {
   useEffect(() => {
     const fetchAuthors = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/authorRoutes");
+        const res = await api.get("/authorRoutes");
         setAuthors(res.data);
       } catch (err) {
         console.log();
@@ -60,10 +60,7 @@ function AuthorsTable() {
   const handleUpdate = async (data) => {
     if (!selectedAuthor) return;
     try {
-      const res = await axios.put(
-        `http://localhost:5000/api/authorRoutes/${selectedAuthor.id}`,
-        data
-      );
+      const res = await api.put(`/authorRoutes/${selectedAuthor.id}`, data);
       const updatedAuthor = res.data || { ...selectedAuthor, ...data };
       setAuthors((prev) =>
         prev.map((a) => (a.id === selectedAuthor.id ? updatedAuthor : a))
@@ -82,7 +79,7 @@ function AuthorsTable() {
     console.log(id, "id errorrrrr");
     if (!window.confirm("Are you sure you want to delete this author?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/authorRoutes/${id}`);
+      await api.delete(`/authorRoutes/${id}`);
       setAuthors((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       console.error(err);

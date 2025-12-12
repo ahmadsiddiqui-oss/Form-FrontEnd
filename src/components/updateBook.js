@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import CustomModal from "./modal";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import api from "./axios";
 
 function BooksTable() {
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ function BooksTable() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/bookRoutes");
+        const res = await api.get("/bookRoutes");
         setBooks(res.data);
       } catch (err) {
         console.error(err);
@@ -70,10 +70,7 @@ function BooksTable() {
   // Update book handler
   const handleUpdateBook = async (data) => {
     try {
-      const res = await axios.put(
-        `http://localhost:5000/api/bookRoutes/${selectedBook.id}`,
-        data
-      );
+      const res = await api.put(`/bookRoutes/${selectedBook.id}`, data);
       const updatedBook = res.data || { ...selectedBook, ...data };
       setBooks((prevBooks) =>
         prevBooks.map((b) => (b.id === selectedBook.id ? updatedBook : b))
@@ -89,7 +86,7 @@ function BooksTable() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this book?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/bookRoutes/${id}`);
+      await api.delete(`/bookRoutes/${id}`);
       setBooks(books.filter((b) => b.id !== id));
     } catch (err) {
       console.error(err);

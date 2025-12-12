@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "./axios";
 
 function Signup() {
   const navigate = useNavigate();
@@ -20,10 +20,7 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/userRoutes/signup",
-        user
-      );
+      const res = await api.post("/userRoutes/signup", user);
 
       if (res.status === 201) {
         alert("User created successfully!");

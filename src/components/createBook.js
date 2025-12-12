@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import api from "./axios";
 
 const schema = yup.object().shape({
   title: yup.string().required("title is required"),
@@ -34,7 +34,7 @@ function CreateBookForm() {
     const fetchAuthors = async () => {
       setLoadingAuthors(true);
       try {
-        const res = await axios.get("http://localhost:5000/api/authorRoutes");
+        const res = await api.get("/authorRoutes");
         setAuthors(res.data);
       } catch (err) {
         console.error("Error fetching authors:", err);
@@ -58,10 +58,7 @@ function CreateBookForm() {
     try {
       await schema.validate(formData, { abortEarly: false });
 
-      const res = await axios.post(
-        "http://localhost:5000/api/bookRoutes",
-        formData
-      );
+      const res = await api.post("/bookRoutes", formData);
       alert("Book created successfully!");
       console.log(res.data);
 

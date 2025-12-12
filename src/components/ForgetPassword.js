@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "./axios";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -8,12 +8,9 @@ function ForgotPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/userRoutes/forgot-password",
-        {
-          email,
-        }
-      );
+      const res = await api.post("/userRoutes/forgot-password", {
+        email,
+      });
       res.sendStatus === 200 &&
         setMessage("Reset link sent! Check your email.");
     } catch (err) {

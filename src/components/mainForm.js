@@ -1,26 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "./axios";
 
 function MainPage() {
   const navigate = useNavigate();
-   const handleLogout = async (e) => {
-  const Token =  localStorage.getItem("authToken");
+  const handleLogout = async (e) => {
     try {
-      const res = await axios.post(
-        `http://localhost:5000/api/userRoutes/logout`,
-      {},
-         {
-        headers: {
-          Authorization: `Bearer ${Token}`,
-        },
-      }
-      );
-      console.log(res)
-        localStorage.removeItem("auth");
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("user");
-        navigate("/login"); // redirect after login
+      const res = await api.post(`/userRoutes/logout`);
+      console.log(res);
+      localStorage.removeItem("auth");
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("user");
+      navigate("/login"); // redirect after login
     } catch (err) {
       console.log(err.response.data);
       alert(err.response?.data?.error || "Login failed");

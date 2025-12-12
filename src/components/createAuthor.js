@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
+import api from "./axios";
 
 // Define Yup validation schema
 const schema = yup.object().shape({
@@ -35,10 +35,7 @@ function CreateAuthorForm() {
     try {
       await schema.validate(formData, { abortEarly: false });
 
-      const res = await axios.post(
-        "http://localhost:5000/api/authorRoutes",
-        formData
-      );
+      const res = await api.post("/authorRoutes", formData);
       alert("Author created successfully!");
       console.log(res.data);
 
