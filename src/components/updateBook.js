@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import { Button } from "react-bootstrap";
@@ -6,12 +7,22 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import api from "./axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 
 function BooksTable() {
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
+  const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(2);
+    const [meta, setMeta] = useState({
+      page: 1,
+      totalPages: 0,
+      prevPage: null,
+      nextPage: null,
+    });
 
   // Yup validation schema
   const bookUpdateSchema = yup.object().shape({
@@ -41,19 +52,27 @@ function BooksTable() {
   });
 
   // Fetch books
+  const fetchBooks = async (page = 1, limit = 2) => {
+    setLoading(true);
+    try {
+      const res = await api.get("/bookRoutes", {
+        params: { page, limit },
+      });
+      console.log(res.data.data, page, limit, "res.data");
+      setBooks(res.data.data || []);
+      setMeta(res.data.meta || {});
+    } catch (err) {
+      console.error(err);
+      setBooks([]);
+      setMeta({});
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await api.get("/bookRoutes");
-        setBooks(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBooks();
-  }, []);
+    fetchBooks(page, limit);
+  }, [page, limit]);
 
   // Populate form when a book is selected
   useEffect(() => {
@@ -157,6 +176,32 @@ function BooksTable() {
           ))}
         </tbody>
       </table>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <ul class="pagination">
+          <li class="page-item">
+            <a
+              class="page-link"
+              onClick={() => setPage(meta?.prevPage)}
+              disabled={!meta?.prevPage}
+            >
+              Previous
+            </a>
+          </li>
+
+          <span style={{ margin: "0 10px" }}>
+            Page {meta.page} of {meta.totalPages}
+          </span>
+          <li class="page-item">
+            <a
+              class="page-link"
+              onClick={() => setPage(meta?.nextPage)}
+              disabled={!meta?.nextPage}
+            >
+              Next
+            </a>
+          </li>
+        </ul>
+      </div>
 
       {selectedBook && (
         <CustomModal

@@ -17,25 +17,25 @@ function Login() {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await api.post(
-        "/authRoutes/login",
-        credentials
-      );
-      console.log(res.data, "resData.");
-      if (res.data.user) {
-        localStorage.setItem("auth", "true");
-        localStorage.setItem("authToken", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        navigate("/main"); // redirect after login
-      }
-    } catch (err) {
-      console.log(err.response.data);
-      alert("Frontend Error..!" + err.response?.data?.error  || "Login failed");
+  try {
+    const res = await api.post("/authRoutes/login", credentials);
+    console.log(res.data, "resData.");
+
+    if (res.data.user) {
+      localStorage.setItem("auth", "true");
+      localStorage.setItem("authToken", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      // localStorage.setItem("role", res.data.user.role); // store role separately
+      navigate("/main");
     }
-  };
+  } catch (err) {
+    console.log(err.response?.data);
+    alert("Frontend Error..!" + (err.response?.data?.error || "Login failed"));
+  }
+};
+
 
   return (
     <div style={styles.container}>
@@ -155,4 +155,5 @@ const styles = {
   },
 };
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default Login;

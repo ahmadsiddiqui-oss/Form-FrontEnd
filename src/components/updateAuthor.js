@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import Button from "react-bootstrap/Button";
@@ -6,12 +7,26 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import api from "./axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function AuthorsTable() {
   const navigate = useNavigate();
   const [authors, setAuthors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAuthor, setSelectedAuthor] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(2);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("createdAt");
+  const [order, setOrder] = useState("DESC");
+  const [meta, setMeta] = useState({
+    page: 1,
+    totalPages: 0,
+    prevPage: null,
+    nextPage: null,
+  });
+  // console.log(authors, setAuthors,loading, setLoading, selectedAuthor, setSelectedAuthor, page, setPage, limit, setLimit, meta, setMeta, "Frontendsss");
+
   // const [authorForm, setAuthorForm] = useState({ name: "", email: "" });
   // const [errors, setErrors] = useState("");
 
@@ -33,20 +48,28 @@ function AuthorsTable() {
     mode: "onChange",
   });
   // Fetch authors
-  useEffect(() => {
-    const fetchAuthors = async () => {
-      try {
-        const res = await api.get("/authorRoutes");
-        setAuthors(res.data);
-      } catch (err) {
-        console.log();
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAuthors();
-  }, []);
+  const fetchAuthors = async (page = 1, limit = 2, sort = "", order = "") => {
+    setLoading(true);
+    try {
+      const res = await api.get(`/authorRoutes?page=${page}&limit=${limit}&search=${search}&sort=${sort}&order=${order}`, {
+        params: { page, limit },
+      });
+      console.log(res.data.data, page, limit, "res.data");
+      setAuthors(res.data.data || []);
+      setMeta(res.data.meta || {});
+    } catch (err) {
+      console.error(err);
+      setAuthors([]);
+      setMeta({});
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchAuthors(page, limit, sort, order);
+  }, [page, limit, sort, order]);
+  console.log(page, limit, "page, limit");
   // Sync form when a new author is selected
   useEffect(() => {
     if (selectedAuthor) {
@@ -58,6 +81,7 @@ function AuthorsTable() {
   }, [selectedAuthor, reset]);
 
   const handleUpdate = async (data) => {
+    console.log(data, "data");
     if (!selectedAuthor) return;
     try {
       const res = await api.put(`/authorRoutes/${selectedAuthor.id}`, data);
@@ -107,6 +131,25 @@ function AuthorsTable() {
           🏠 Home
         </button>
       </h2>
+      <h3>
+        <input
+          type="text"
+          placeholder="Search author..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1); // reset page
+          }}
+        />
+        <select value={sort} onChange={(e) => setSort(e.target.value)}>
+          <option value="createdAt">Created Date</option>
+          <option value="name">Name</option>
+        </select>
+        <select value={order} onChange={(e) => setOrder(e.target.value)}>
+          <option value="DESC">DESC</option>
+          <option value="ASC">ASC</option>
+        </select>
+      </h3>
       <table
         border="1"
         cellPadding="10"
@@ -149,6 +192,33 @@ function AuthorsTable() {
           ))}
         </tbody>
       </table>
+      <div style={{ marginTop: "20px", textAlign: "center" }}>
+        <ul class="pagination">
+          <li class="page-item">
+            <a
+              class="page-link"
+              onClick={() => setPage(meta?.prevPage)}
+              disabled={!meta?.prevPage}
+            >
+              Previous
+            </a>
+          </li>
+
+          <span style={{ margin: "0 10px" }}>
+            Page {meta.page} of {meta.totalPages}
+          </span>
+          <li class="page-item">
+            <a
+              class="page-link"
+              onClick={() => setPage(meta?.nextPage)}
+              disabled={!meta?.nextPage}
+            >
+              Next
+            </a>
+          </li>
+        </ul>
+      </div>
+
       {/* Reusable Modal */}
       {selectedAuthor && (
         <CustomModal

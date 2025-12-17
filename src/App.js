@@ -11,7 +11,8 @@ import Signup from "./components/signUp";
 import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
 import PublicRoute from "./components/PublicRoute";
-
+import Unauthorized from "./components/Unauthorised";
+import File from "./components/File";
 function App() {
   return (
     <Router>
@@ -35,12 +36,14 @@ function App() {
         />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
+        <Route path="/file" element={<File />} />
 
         {/* PROTECTED ROUTES */}
         <Route
           path="/main"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
               <MainPage />
             </ProtectedRoute>
           }
@@ -49,7 +52,7 @@ function App() {
         <Route
           path="/book"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
               <CreateBookForm />
             </ProtectedRoute>
           }
@@ -58,7 +61,7 @@ function App() {
         <Route
           path="/author"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
               <CreateAuthorForm />
             </ProtectedRoute>
           }
@@ -67,7 +70,7 @@ function App() {
         <Route
           path="/updateAuthor"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
               <AuthorsTable />
             </ProtectedRoute>
           }
@@ -76,7 +79,7 @@ function App() {
         <Route
           path="/updateBook"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
               <BooksTable />
             </ProtectedRoute>
           }

@@ -1,9 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import api from "./axios";
+import { getUserRole } from "./auth";
 
 function MainPage() {
   const navigate = useNavigate();
+  const role = getUserRole(); // ✅ get user role from token
+
   const handleLogout = async (e) => {
     try {
       const res = await api.post(`/authRoutes/logout`);
@@ -11,50 +14,78 @@ function MainPage() {
       localStorage.removeItem("auth");
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
+      // localStorage.removeItem("role");
       navigate("/login"); // redirect after login
     } catch (err) {
       console.log(err.response.data);
       alert(err.response?.data?.error || "Login failed");
     }
   };
-
+  console.log(role, "<<role>>");
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>Library Management</h1>
 
       <div style={styles.grid}>
         <button
-          style={{ ...styles.btn, backgroundColor: "turquoise" }}
+          style={{
+            ...styles.btn,
+            backgroundColor: "turquoise",
+            marginTop: "40px",
+          }}
           onClick={() => navigate("/author")}
         >
           ➕ Create Author
         </button>
 
         <button
-          style={{ ...styles.btn, backgroundColor: "turquoise" }}
+          style={{
+            ...styles.btn,
+            backgroundColor: "turquoise",
+            marginTop: "40px",
+          }}
           onClick={() => navigate("/book")}
         >
           ➕ Create Book
         </button>
 
-        <button
-          style={{ ...styles.btn, backgroundColor: "turquoise" }}
-          onClick={() => navigate("/updateAuthor")}
-        >
-          📄 Authors Listing...!
-        </button>
+        {(role === "Admin" || role === "Manager") && (
+          <button
+            style={{
+              ...styles.btn,
+              backgroundColor: "turquoise",
+              marginTop: "40px",
+            }}
+            onClick={() => navigate("/updateAuthor")}
+          >
+            📄 Update Author...!
+          </button>
+        )}
 
+        {(role === "Admin" || role === "Manager") && (
+          <button
+            style={{
+              ...styles.btn,
+              backgroundColor: "turquoise",
+              marginTop: "40px",
+            }}
+            onClick={() => navigate("/updateBook")}
+          >
+            📄 Update Books...!
+          </button>
+        )}
         <button
-          style={{ ...styles.btn, backgroundColor: "turquoise" }}
-          onClick={() => navigate("/updateBook")}
+          style={{
+            ...styles.btn,
+            backgroundColor: "ActiveText",
+            marginTop: "100px",
+          }}
+          onClick={() => navigate("/file")}
         >
-          📄 Books Listing...!
+          😎 Update Profile Picture..!
         </button>
-        {/* <button style={{backgroundColor: ""}} onClick={() => navigate("/login")}>
-          LogIn Page...!
-        </button> */}
         <button
-          style={{ ...styles.btn, backgroundColor: "tan" }}
+          style={{ ...styles.btn, backgroundColor: "tan", marginTop: "100px" }}
           onClick={() => {
             handleLogout();
           }}

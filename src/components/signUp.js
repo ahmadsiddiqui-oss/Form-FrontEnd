@@ -10,6 +10,7 @@ function Signup() {
     name: "",
     email: "",
     password: "",
+    role: "User",
   });
 
   const handleChange = (e) => {
@@ -83,6 +84,18 @@ function Signup() {
             {showPassword ? "👁️" : "🙈"}
           </span>
         </div>
+        {/* Role dropdown */}
+        <select
+          name="role"
+          onChange={handleChange}
+          value={user.role}
+          style={styles.input}
+          // required
+        >
+          <option value="User">User</option>
+          <option value="Manager">Manager</option>
+          <option value="Admin">Admin</option>
+        </select>
 
         <button
           type="submit"

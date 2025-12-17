@@ -35,7 +35,7 @@ function CreateBookForm() {
       setLoadingAuthors(true);
       try {
         const res = await api.get("/authorRoutes");
-        setAuthors(res.data);
+        setAuthors(res.data.data);
       } catch (err) {
         console.error("Error fetching authors:", err);
       } finally {
