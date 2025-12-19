@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import CustomModal from "./modal";
 import { Button } from "react-bootstrap";
@@ -9,20 +8,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import api from "./axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
 function BooksTable() {
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
   const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(2);
-    const [meta, setMeta] = useState({
-      page: 1,
-      totalPages: 0,
-      prevPage: null,
-      nextPage: null,
-    });
+  const [limit, setLimit] = useState(2);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("createdAt");
+  const [order, setOrder] = useState("DESC");
+  const [meta, setMeta] = useState({
+    page: 1,
+    totalPages: 0,
+    prevPage: null,
+    nextPage: null,
+  });
 
   // Yup validation schema
   const bookUpdateSchema = yup.object().shape({
@@ -52,12 +53,10 @@ function BooksTable() {
   });
 
   // Fetch books
-  const fetchBooks = async (page = 1, limit = 2) => {
+  const fetchBooks = async (page = 1, limit = 2, sort = "createdAt", order = "DESC") => {
     setLoading(true);
     try {
-      const res = await api.get("/bookRoutes", {
-        params: { page, limit },
-      });
+      const res = await api.get(`/bookRoutes?page=${page}&limit=${limit}&search=${search}&sort=${sort}&order=${order}`);
       console.log(res.data.data, page, limit, "res.data");
       setBooks(res.data.data || []);
       setMeta(res.data.meta || {});
@@ -71,8 +70,10 @@ function BooksTable() {
   };
 
   useEffect(() => {
-    fetchBooks(page, limit);
-  }, [page, limit]);
+    fetchBooks(page, limit, sort, order);
+  }, [page, limit, sort, order]);
+    console.log(page, limit, sort, order, "page, limit");
+
 
   // Populate form when a book is selected
   useEffect(() => {
@@ -132,7 +133,38 @@ function BooksTable() {
         >
           🏠 Home
         </button>
-      </h2>
+        </h2>
+           <h3>
+        <input
+          type="text"
+          placeholder="Search book..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1); // reset page
+          }}
+        />
+        <select value={sort} onChange={(e) => setSort(e.target.value)}>
+          <option value="createdAt">Created Date</option>
+          <option value="name">Name</option>
+        </select>
+        <select value={order} onChange={(e) => setOrder(e.target.value)}>
+          <option value="DESC">DESC</option>
+          <option value="ASC">ASC</option>
+        </select>
+        <button
+          style={{
+            // padding: "10px 25px",
+            backgroundColor: "springGreen",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          onClick={() => fetchBooks()}
+        >
+          Search Author
+        </button>
+      </h3>
       <table
         border="1"
         cellPadding="10"

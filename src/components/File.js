@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import api from "./axios";
+import { useNavigate } from "react-router-dom";
 
 function AuthorForm() {
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -37,6 +40,8 @@ function AuthorForm() {
       });
 
       console.log(res.data);
+      setFile(null);
+      fileInputRef.current.value = "";
       alert("Author added and file uploaded successfully!");
     } catch (err) {
       console.error(err.response ? err.response.data : err.message);
@@ -49,48 +54,54 @@ function AuthorForm() {
       <form onSubmit={handleSubmit} style={{ ...styles.form }}>
         <div>
           {" "}
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Author Name"
+          <h2
             style={{
-              ...styles.input,
-              borderRadius: "5px",
-              border: "none",
-              width: "100%",
+              textAlign: "center",
+              fontWeight: "bold",
+              fontFamily: "ui-sans-serif",
+              marginBottom: "20px",
             }}
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            style={{
-              ...styles.input,
-              borderRadius: "5px",
-              border: "none",
-              width: "100%",
-            }}
-            required
-          />
+          >
+            Upload File
+          </h2>
         </div>
-        <input type="file" name="myFile" onChange={handleFileChange} required />
+        <input
+          type="file"
+          name="myFile"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          required
+          style={{
+            cursor: "pointer",
+          }}
+        />
         <button
           type="submit"
           style={{
             backgroundColor: "turquoise",
             borderRadius: "5px",
             border: "none",
+            marginTop: "20px",
             color: "white",
             padding: "10px 0px",
             fontWeight: "bolder",
+            cursor: "pointer",
           }}
         >
           Submit
+        </button>
+        <button
+          type="button"
+          style={{
+            padding: "10px 25px",
+            backgroundColor: "springGreen",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/main")}
+        >
+          🏠 Home
         </button>
       </form>
     </div>

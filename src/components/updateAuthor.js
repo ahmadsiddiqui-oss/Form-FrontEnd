@@ -69,7 +69,7 @@ function AuthorsTable() {
   useEffect(() => {
     fetchAuthors(page, limit, sort, order);
   }, [page, limit, sort, order]);
-  console.log(page, limit, "page, limit");
+  console.log(page, limit, sort, order, "page, limit");
   // Sync form when a new author is selected
   useEffect(() => {
     if (selectedAuthor) {
@@ -149,6 +149,18 @@ function AuthorsTable() {
           <option value="DESC">DESC</option>
           <option value="ASC">ASC</option>
         </select>
+        <button
+          style={{
+            // padding: "10px 25px",
+            backgroundColor: "springGreen",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          onClick={() => fetchAuthors()}
+        >
+          Search Author
+        </button>
       </h3>
       <table
         border="1"
