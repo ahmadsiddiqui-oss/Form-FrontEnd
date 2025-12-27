@@ -14,6 +14,7 @@ function ProtectedRoute({ children, allowedRoles }) {
     // 2️⃣ Token decode
     const decoded = jwtDecode(token);
     const userRole = decoded.role;
+    console.log(userRole, decoded);
 
     // 3️⃣ Role allow hai ya nahi
     if (!allowedRoles.includes(userRole)) {

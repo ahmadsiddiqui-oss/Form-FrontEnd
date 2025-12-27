@@ -12,7 +12,10 @@ import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
 import PublicRoute from "./components/PublicRoute";
 import Unauthorized from "./components/Unauthorised";
-import File from "./components/File";
+import File from "./components/file";
+import PermissionModal from "./components/permission";
+import UsersTable from "./components/users";
+
 function App() {
   return (
     <Router>
@@ -37,13 +40,24 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/file" element={<File />} />
 
         {/* PROTECTED ROUTES */}
         <Route
+          path="/file"
+          element={
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "User", "HR", "Finance"]}
+            >
+              <File />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/main"
           element={
-            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "User", "HR", "Finance"]}
+            >
               <MainPage />
             </ProtectedRoute>
           }
@@ -52,7 +66,9 @@ function App() {
         <Route
           path="/book"
           element={
-            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
+            >
               <CreateBookForm />
             </ProtectedRoute>
           }
@@ -61,7 +77,9 @@ function App() {
         <Route
           path="/author"
           element={
-            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
+            >
               <CreateAuthorForm />
             </ProtectedRoute>
           }
@@ -70,7 +88,9 @@ function App() {
         <Route
           path="/updateAuthor"
           element={
-            <ProtectedRoute allowedRoles={["Admin", "Manager", "User"]}>
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
+            >
               <AuthorsTable />
             </ProtectedRoute>
           }
@@ -79,8 +99,30 @@ function App() {
         <Route
           path="/updateBook"
           element={
-            <ProtectedRoute allowedRoles={["Admin", "Manager"]}>
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
+            >
               <BooksTable />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/permission"
+          element={
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
+            >
+              <PermissionModal />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/users"
+          element={
+            <ProtectedRoute
+              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
+            >
+              <UsersTable />
             </ProtectedRoute>
           }
         />

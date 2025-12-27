@@ -9,7 +9,7 @@ function Unauthorized() {
       <h1>🚫 Access Denied!</h1>
       <p>You do not have permission to view this page.</p>
       <button
-        onClick={() => navigate("/main")}
+        onClick={() => navigate("/login")}
         style={{ padding: "10px 20px", marginTop: "20px", cursor: "pointer" }}
       >
         Go Back

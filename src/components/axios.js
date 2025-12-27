@@ -22,7 +22,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // handle unauthorized, maybe logout user
+      // handle , maybe logout user
       localStorage.removeItem("authToken");
       window.location.href = "/login";
     }

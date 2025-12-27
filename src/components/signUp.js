@@ -1,17 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "./axios";
 
 function Signup() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [loadingRoles, setLoadingRoles] = useState(false);
+  const [roles, setRoles] = useState([]);
 
   const [user, setUser] = useState({
     name: "",
     email: "",
     password: "",
-    role: "User",
+    role: "",
   });
+
+  // --- Fetch authors for dropdown ---
+  useEffect(() => {
+    const fetchAuthors = async () => {
+      setLoadingRoles(true);
+      try {
+        const res = await api.get("/roleRoutes");
+        setRoles(res.data);
+      } catch (err) {
+        console.error("Error fetching roles:", err);
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+
+    fetchAuthors();
+  }, []);
 
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -88,13 +107,20 @@ function Signup() {
         <select
           name="role"
           onChange={handleChange}
-          value={user.role}
+          value={user.role.name}
           style={styles.input}
           // required
         >
-          <option value="User">User</option>
-          <option value="Manager">Manager</option>
-          <option value="Admin">Admin</option>
+          <option value="">Select Author</option>
+          {loadingRoles ? (
+            <option>Loading...</option>
+          ) : (
+            roles.map((role) => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
+            ))
+          )}
         </select>
 
         <button

@@ -40,6 +40,10 @@ function AuthorForm() {
       });
 
       console.log(res.data);
+      // get user from local storage
+      const user = JSON.parse(localStorage.getItem("user"));
+      user.profileImage = {filename: res.data.profileImage.filename};
+      localStorage.setItem("user", JSON.stringify(user));
       setFile(null);
       fileInputRef.current.value = "";
       alert("Author added and file uploaded successfully!");

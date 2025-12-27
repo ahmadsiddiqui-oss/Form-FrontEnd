@@ -27,7 +27,6 @@ function Login() {
       localStorage.setItem("auth", "true");
       localStorage.setItem("authToken", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-      // localStorage.setItem("role", res.data.user.role); // store role separately
       navigate("/main");
     }
   } catch (err) {

@@ -9,16 +9,20 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import api from "./axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+import { getUserPermissions } from "./auth";
+
 function AuthorsTable() {
   const navigate = useNavigate();
+  const permissions = getUserPermissions();
+  const canWrite = permissions.includes("create_author");
   const [authors, setAuthors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedAuthor, setSelectedAuthor] = useState(null);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(2);
+  const [limit] = useState(2);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("createdAt");
-  const [order, setOrder] = useState("DESC");
+  const [order, setOrder] = useState("ASC");
   const [meta, setMeta] = useState({
     page: 1,
     totalPages: 0,
@@ -48,27 +52,33 @@ function AuthorsTable() {
     mode: "onChange",
   });
   // Fetch authors
-  const fetchAuthors = async (page = 1, limit = 2, sort = "", order = "") => {
-    setLoading(true);
-    try {
-      const res = await api.get(`/authorRoutes?page=${page}&limit=${limit}&search=${search}&sort=${sort}&order=${order}`, {
-        params: { page, limit },
-      });
-      console.log(res.data.data, page, limit, "res.data");
-      setAuthors(res.data.data || []);
-      setMeta(res.data.meta || {});
-    } catch (err) {
-      console.error(err);
-      setAuthors([]);
-      setMeta({});
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchAuthors = React.useCallback(
+    async (page = 1, limit = 2, sort = "", order = "") => {
+      setLoading(true);
+      try {
+        const res = await api.get(
+          `/authorRoutes?page=${page}&limit=${limit}&search=${search}&sort=${sort}&order=${order}`,
+          {
+            params: { page, limit },
+          }
+        );
+        console.log(res.data.data, page, limit, "res.data");
+        setAuthors(res.data.data || []);
+        setMeta(res.data.meta || {});
+      } catch (err) {
+        console.error(err);
+        setAuthors([]);
+        setMeta({});
+      } finally {
+        setLoading(false);
+      }
+    },
+    [search]
+  );
 
   useEffect(() => {
     fetchAuthors(page, limit, sort, order);
-  }, [page, limit, sort, order]);
+  }, [page, limit, sort, order, fetchAuthors]);
   console.log(page, limit, sort, order, "page, limit");
   // Sync form when a new author is selected
   useEffect(() => {
@@ -171,7 +181,7 @@ function AuthorsTable() {
           <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Actions</th>
+            {canWrite && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -179,54 +189,58 @@ function AuthorsTable() {
             <tr key={a.id}>
               <td>{a.name}</td>
               <td>{a.email}</td>
-              <td>
-                <button
-                  style={{
-                    background: "#f86e48ff",
-                    border: "0px",
-                    padding: "7px 25px",
-                    borderRadius: "5px",
-                  }}
-                  onClick={() => setSelectedAuthor(a)}
-                >
-                  Edit
-                </button>{" "}
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    handleDelete(a.id);
-                  }}
-                >
-                  Delete
-                </Button>
-              </td>
+              {canWrite && (
+                <td>
+                  <button
+                    style={{
+                      background: "#f86e48ff",
+                      border: "0px",
+                      padding: "7px 25px",
+                      borderRadius: "5px",
+                    }}
+                    onClick={() => setSelectedAuthor(a)}
+                  >
+                    Edit
+                  </button>{" "}
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      handleDelete(a.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
       <div style={{ marginTop: "20px", textAlign: "center" }}>
-        <ul class="pagination">
-          <li class="page-item">
-            <a
-              class="page-link"
+        <ul className="pagination justify-content-center">
+          <li className={`page-item ${!meta?.prevPage ? "disabled" : ""}`}>
+            <Button
+              variant="link"
+              className="page-link"
               onClick={() => setPage(meta?.prevPage)}
               disabled={!meta?.prevPage}
             >
               Previous
-            </a>
+            </Button>
           </li>
 
-          <span style={{ margin: "0 10px" }}>
+          <span style={{ margin: "0 10px", alignSelf: "center" }}>
             Page {meta.page} of {meta.totalPages}
           </span>
-          <li class="page-item">
-            <a
-              class="page-link"
+          <li className={`page-item ${!meta?.nextPage ? "disabled" : ""}`}>
+            <Button
+              variant="link"
+              className="page-link"
               onClick={() => setPage(meta?.nextPage)}
               disabled={!meta?.nextPage}
             >
               Next
-            </a>
+            </Button>
           </li>
         </ul>
       </div>

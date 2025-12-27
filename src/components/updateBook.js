@@ -8,13 +8,17 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import api from "./axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+import { getUserPermissions } from "./auth";
+
 function BooksTable() {
   const navigate = useNavigate();
+  const permissions = getUserPermissions();
+  const canWrite = permissions.includes("create_book");
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBook, setSelectedBook] = useState(null);
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(2);
+  const [limit] = useState(2);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("createdAt");
   const [order, setOrder] = useState("DESC");
@@ -53,27 +57,31 @@ function BooksTable() {
   });
 
   // Fetch books
-  const fetchBooks = async (page = 1, limit = 2, sort = "createdAt", order = "DESC") => {
-    setLoading(true);
-    try {
-      const res = await api.get(`/bookRoutes?page=${page}&limit=${limit}&search=${search}&sort=${sort}&order=${order}`);
-      console.log(res.data.data, page, limit, "res.data");
-      setBooks(res.data.data || []);
-      setMeta(res.data.meta || {});
-    } catch (err) {
-      console.error(err);
-      setBooks([]);
-      setMeta({});
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchBooks = React.useCallback(
+    async (page = 1, limit = 2, sort = "createdAt", order = "DESC") => {
+      setLoading(true);
+      try {
+        const res = await api.get(
+          `/bookRoutes?page=${page}&limit=${limit}&search=${search}&sort=${sort}&order=${order}`
+        );
+        console.log(res.data.data, page, limit, "res.data");
+        setBooks(res.data.data || []);
+        setMeta(res.data.meta || {});
+      } catch (err) {
+        console.error(err);
+        setBooks([]);
+        setMeta({});
+      } finally {
+        setLoading(false);
+      }
+    },
+    [search]
+  );
 
   useEffect(() => {
     fetchBooks(page, limit, sort, order);
-  }, [page, limit, sort, order]);
-    console.log(page, limit, sort, order, "page, limit");
-
+  }, [page, limit, sort, order, fetchBooks]);
+  console.log(page, limit, sort, order, "page, limit");
 
   // Populate form when a book is selected
   useEffect(() => {
@@ -133,8 +141,8 @@ function BooksTable() {
         >
           🏠 Home
         </button>
-        </h2>
-           <h3>
+      </h2>
+      <h3>
         <input
           type="text"
           placeholder="Search book..."
@@ -177,7 +185,7 @@ function BooksTable() {
             <th>ISBN</th>
             <th>Published Date</th>
             <th>Author ID</th>
-            <th>Actions</th>
+            {canWrite && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
@@ -188,49 +196,53 @@ function BooksTable() {
               <td>{b.isbn}</td>
               <td>{b.publishedDate.toString().split("T")[0]}</td>
               <td>{b.authorId}</td>
-              <td>
-                <button
-                  style={{
-                    padding: "6px 25px",
-                    backgroundColor: "#f86e48ff",
-                    border: "none",
-                    borderRadius: "5px",
-                  }}
-                  onClick={() => setSelectedBook(b)}
-                >
-                  Edit
-                </button>{" "}
-                <Button variant="primary" onClick={() => handleDelete(b.id)}>
-                  Delete
-                </Button>
-              </td>
+              {canWrite && (
+                <td>
+                  <button
+                    style={{
+                      padding: "6px 25px",
+                      backgroundColor: "#f86e48ff",
+                      border: "none",
+                      borderRadius: "5px",
+                    }}
+                    onClick={() => setSelectedBook(b)}
+                  >
+                    Edit
+                  </button>{" "}
+                  <Button variant="primary" onClick={() => handleDelete(b.id)}>
+                    Delete
+                  </Button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
       </table>
       <div style={{ marginTop: "20px", textAlign: "center" }}>
-        <ul class="pagination">
-          <li class="page-item">
-            <a
-              class="page-link"
+        <ul className="pagination justify-content-center">
+          <li className={`page-item ${!meta?.prevPage ? "disabled" : ""}`}>
+            <Button
+              variant="link"
+              className="page-link"
               onClick={() => setPage(meta?.prevPage)}
               disabled={!meta?.prevPage}
             >
               Previous
-            </a>
+            </Button>
           </li>
 
-          <span style={{ margin: "0 10px" }}>
+          <span style={{ margin: "0 10px", alignSelf: "center" }}>
             Page {meta.page} of {meta.totalPages}
           </span>
-          <li class="page-item">
-            <a
-              class="page-link"
+          <li className={`page-item ${!meta?.nextPage ? "disabled" : ""}`}>
+            <Button
+              variant="link"
+              className="page-link"
               onClick={() => setPage(meta?.nextPage)}
               disabled={!meta?.nextPage}
             >
               Next
-            </a>
+            </Button>
           </li>
         </ul>
       </div>
