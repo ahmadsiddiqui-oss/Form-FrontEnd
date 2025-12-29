@@ -6,9 +6,11 @@ import api from "./axios";
 import styles from "./Css"; // Using the styles you created
 const UserPermissionsModal = ({ show, onClose, userId, userName }) => {
   const [allPermissions, setAllPermissions] = useState([]);
-  const [userPermissions, setUserPermissions] = useState([]); // Array of Permission IDs
+  const [userPermissions, setUserPermissions] = useState([]); // Array of Direct Permission IDs
+  const [rolePermissions, setRolePermissions] = useState([]); // Array of Role-based Permission IDs
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [userRoleName, setUserRoleName] = useState("");
 
   useEffect(() => {
     if (show && userId) {
@@ -28,23 +30,18 @@ const UserPermissionsModal = ({ show, onClose, userId, userName }) => {
       const userData = userRes.data.data || userRes.data;
 
       // 3. Extract Direct Permissions
-      const directPerms = userData?.userPermissions || [];
+      const directPerms =
+        userData?.userPermissions || userData?.UserPermissions || [];
+      setUserPermissions(directPerms.map((p) => String(p.id)));
 
-      // 4. Extract Role-based Permissions (if any)
-      const rolePerms = userData?.Role?.permissions || [];
-      console.log("Role Permissions:", rolePerms);
-      console.log("Direct Permissions:", userData);
+      // 4. Extract Role-based Permissions (based on your screenshot casing)
+      const roleData = userData?.Role || userData?.role;
+      const rolePerms = roleData?.Permissions || roleData?.permissions || [];
+      setRolePermissions(rolePerms.map((p) => String(p.id)));
+      setUserRoleName(roleData?.name || roleData?.Name || "No Role");
 
-      // 5. Combine unique IDs from both sources
-      const combinedIds = new Set([
-        ...directPerms.map((p) => String(p.id)),
-        ...rolePerms.map((p) => String(p.id)),
-      ]);
-
-      // Set valid string IDs
-      setUserPermissions(Array.from(combinedIds));
-
-      console.log("Combined User Permissions:", Array.from(combinedIds));
+      console.log("Role Permissions Map:", rolePerms);
+      console.log("Direct Permissions Map:", directPerms);
     } catch (error) {
       console.error("Error fetching permissions:", error);
     } finally {
@@ -90,7 +87,6 @@ const UserPermissionsModal = ({ show, onClose, userId, userName }) => {
         </div>
       );
     }
-console.log("User Permissions:", userPermissions, allPermissions);
     return (
       <div className="container-fluid p-0">
         <div className="mb-3">
@@ -102,23 +98,34 @@ console.log("User Permissions:", userPermissions, allPermissions);
         <div className="row g-2">
           {allPermissions.length > 0 ? (
             allPermissions.map((perm) => {
-              const isChecked = userPermissions.includes(String(perm.id));
+              const idStr = String(perm.id);
+              const isDirect = userPermissions.includes(idStr);
+              const isInherited = rolePermissions.includes(idStr);
+              const isChecked = isDirect;
+
               return (
                 <div className="col-12" key={perm.id}>
                   <div
-                    className="p-3 border rounded d-flex justify-content-between align-items-center transition-all"
+                    className="p-3 border rounded d-flex justify-content-between align-items-center transition-all shadow-sm mb-2"
                     style={{
                       backgroundColor: isChecked ? "#f0f9ff" : "#fff",
                       borderColor: isChecked ? "#0ea5e9" : "#e5e7eb",
                       transition: "0.2s all ease-in-out",
                       cursor: "pointer",
+                      borderLeft: isInherited
+                        ? "4px solid #0ea5e9"
+                        : "1px solid #e5e7eb",
                     }}
                     onClick={() => handleToggle(perm.id)}
                   >
                     <div>
-                      <strong style={{ color: isChecked ? "#0284c7" : "#333" }}>
-                        {perm.name}
-                      </strong>
+                      <div className="d-flex align-items-center gap-2 mb-1">
+                        <strong
+                          style={{ color: isChecked ? "#0284c7" : "#333" }}
+                        >
+                          {perm.name}
+                        </strong>
+                      </div>
                       {perm.description && (
                         <div
                           className="text-muted small"
@@ -249,6 +256,7 @@ const ManagePermissions = () => {
               <tr>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Role</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -258,6 +266,7 @@ const ManagePermissions = () => {
                   <tr key={user.id}>
                     <td>{user.name}</td>
                     <td>{user.email}</td>
+                    <td>{user.Role.name}</td>
                     <td>
                       <Button
                         variant="info"
