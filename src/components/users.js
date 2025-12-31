@@ -14,7 +14,13 @@ const UsersTable = () => {
   // Selection/Edit States
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [editData, setEditData] = useState({ email: "", password: "" });
+  const [editData, setEditData] = useState({
+    email: "",
+    password: "",
+    role: "",
+  });
+  const [roles, setRoles] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(false);
 
   // Pagination & Search
   const [page, setPage] = useState(1);
@@ -37,6 +43,18 @@ const UsersTable = () => {
     }
   }, [page, limit, searchTerm]);
 
+  const fetchRoles = React.useCallback(async () => {
+    setLoadingRoles(true);
+    try {
+      const res = await api.get("/roleRoutes");
+      setRoles(res.data || []);
+    } catch (err) {
+      console.error("Error fetching roles:", err);
+    } finally {
+      setLoadingRoles(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -54,8 +72,14 @@ const UsersTable = () => {
 
   const handleEditClick = (user) => {
     setSelectedUser(user);
-    setEditData({ email: user.email, password: "" });
+    // Use roleId if available, fallback to Role object id, then fallback to original role string/id
+    setEditData({
+      email: user.email,
+      password: "",
+      role: user.roleId || user.Role?.id || user.role || "",
+    });
     setShowEditModal(true);
+    fetchRoles();
   };
 
   const handleUpdate = async () => {
@@ -83,7 +107,7 @@ const UsersTable = () => {
         />
       </Form.Group>
       <Form.Group className="mb-3">
-        <Form.Label>New Password (leave blank to keep current)</Form.Label>
+        <Form.Label>New Password.</Form.Label>
         <Form.Control
           type="password"
           placeholder="Enter new password"
@@ -92,6 +116,24 @@ const UsersTable = () => {
             setEditData({ ...editData, password: e.target.value })
           }
         />
+      </Form.Group>
+      <Form.Group className="mb-3">
+        <Form.Label>Role</Form.Label>
+        <Form.Select
+          value={editData.role}
+          onChange={(e) => setEditData({ ...editData, role: e.target.value })}
+        >
+          {/* <option value="">Select Role</option> */}
+          {loadingRoles ? (
+            <option disabled>Loading roles...</option>
+          ) : (
+            roles.map((role) => (
+              <option key={role.id} value={role.id}>
+                {role.name}
+              </option>
+            ))
+          )}
+        </Form.Select>
       </Form.Group>
     </Form>
   );
