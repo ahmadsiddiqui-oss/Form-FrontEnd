@@ -10,6 +10,7 @@ import api from "./axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { getUserPermissions } from "./auth";
+import { toast } from "react-toastify";
 
 function AuthorsTable() {
   const navigate = useNavigate();
@@ -96,11 +97,11 @@ function AuthorsTable() {
         prev.map((a) => (a.id === selectedAuthor.id ? updatedAuthor : a))
       );
       setSelectedAuthor(null); // clear selection
-      alert("Author updated successfully..!");
+      toast("Author updated successfully..!");
     } catch (err) {
       console.log(err);
       console.log("err", err?.toString()?.split(": ")[1]);
-      alert("Failed to update book: " + err.message);
+      toast.error("Failed to update book: " + err.message);
     }
   };
   console.log(errors, getValues());

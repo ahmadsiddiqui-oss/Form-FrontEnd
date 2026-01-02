@@ -9,6 +9,7 @@ import api from "./axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import { getUserPermissions } from "./auth";
+import { toast } from "react-toastify";
 
 function BooksTable() {
   const navigate = useNavigate();
@@ -104,10 +105,10 @@ function BooksTable() {
         prevBooks.map((b) => (b.id === selectedBook.id ? updatedBook : b))
       );
       setSelectedBook(null);
-      alert("Book updated successfully");
+      toast("Book updated successfully");
     } catch (err) {
       console.error(err);
-      alert("Failed to update book: " + err.message);
+      toast.error("Failed to update book: " + err.message);
     }
   };
 

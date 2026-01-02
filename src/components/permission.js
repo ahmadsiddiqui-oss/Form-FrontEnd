@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import CustomModal from "./modal";
 import api from "./axios";
 import styles from "./Css"; // Using the styles you created
+import { toast } from "react-toastify";
 const UserPermissionsModal = ({ show, onClose, userId, userName }) => {
   const [allPermissions, setAllPermissions] = useState([]);
   const [userPermissions, setUserPermissions] = useState([]); // Array of Direct Permission IDs
@@ -66,11 +67,11 @@ const UserPermissionsModal = ({ show, onClose, userId, userName }) => {
         permissions: userPermissions,
       });
 
-      alert("Permissions updated successfully!");
+      toast("Permissions updated successfully!");
       if (onClose) onClose();
     } catch (error) {
       console.error("Error updating permissions:", error);
-      alert("Failed to update permissions.");
+      toast.error("Failed to update permissions.");
     } finally {
       setSaving(false);
     }

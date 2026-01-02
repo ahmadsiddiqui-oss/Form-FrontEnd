@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "./axios";
 import styles from "./Css";
 import CustomModal from "./modal";
+import { toast } from "react-toastify";
 
 const UsersTable = () => {
   const navigate = useNavigate();
@@ -63,10 +64,10 @@ const UsersTable = () => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
       await api.delete(`/userRoutes/${id}`);
-      alert("User deleted successfully");
+      toast("User deleted successfully");
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.error || "Failed to delete user");
+      toast.error(err.response?.data?.error || "Failed to delete user");
     }
   };
 
@@ -86,11 +87,11 @@ const UsersTable = () => {
     setSubmitting(true);
     try {
       await api.put(`/userRoutes/${selectedUser.id}`, editData);
-      alert("User updated successfully");
+      toast("User updated successfully");
       setShowEditModal(false);
       fetchUsers();
     } catch (err) {
-      alert(err.response?.data?.error || "Update failed");
+      toast.error(err.response?.data?.error || "Update failed");
     } finally {
       setSubmitting(false);
     }

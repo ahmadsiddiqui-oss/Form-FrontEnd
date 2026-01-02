@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "./axios";
+import { toast } from "react-toastify";
 
 function Signup() {
   const navigate = useNavigate();
@@ -43,12 +44,12 @@ function Signup() {
       const res = await api.post("/authRoutes/signup", user);
 
       if (res.status === 201) {
-        alert("User created successfully!");
+        toast("User created successfully!");
         navigate("/main"); // Redirect to login page
       }
     } catch (err) {
       console.log(err.message);
-      alert(err.response?.data?.error || err.message || "Signup failed");
+      toast.error(err.response?.data?.error || err.message || "Signup failed");
     }
   };
 

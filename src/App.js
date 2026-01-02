@@ -12,9 +12,10 @@ import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
 import PublicRoute from "./components/PublicRoute";
 import Unauthorized from "./components/Unauthorised";
-import File from "./components/file";
+import File from "./components/File";
 import PermissionModal from "./components/permission";
 import UsersTable from "./components/users";
+
 
 function App() {
   return (

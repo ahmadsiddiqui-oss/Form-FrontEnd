@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap";
 import api from "./axios";
 import { getUserRole, getUserPermissions } from "./auth";
+import { toast } from "react-toastify";
 
 function MainPage() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ function MainPage() {
       navigate("/login");
     } catch (err) {
       console.log(err.response?.data);
-      alert(err.response?.data?.error || "Logout failed");
+      toast.error(err.response?.data?.error || "Logout failed");
     }
   };
 
@@ -101,11 +102,12 @@ function MainPage() {
                           width: "100%",
                           height: "100%",
                           objectFit: "cover",
-                      borderRadius: "50%",
-                    }}/>
-                  ) : (
-                    user.name.charAt(0).toUpperCase()
-                  )}
+                          borderRadius: "50%",
+                        }}
+                      />
+                    ) : (
+                      user.name.charAt(0).toUpperCase()
+                    )}
                   </div>
                   <h4 className="card-title fw-bold mb-1">
                     {user.name || "Guest User"}

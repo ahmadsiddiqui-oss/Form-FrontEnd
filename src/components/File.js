@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import api from "./axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function AuthorForm() {
   const navigate = useNavigate();
@@ -41,10 +42,10 @@ function AuthorForm() {
       localStorage.setItem("user", JSON.stringify(user));
       setFile(null);
       fileInputRef.current.value = "";
-      alert("Author added and file uploaded successfully!");
+      toast("Author added and file uploaded successfully!");
     } catch (err) {
       console.error(err.response ? err.response.data : err.message);
-      alert("Error uploading file");
+      toast.error("Error uploading file");
     }
   };
 
