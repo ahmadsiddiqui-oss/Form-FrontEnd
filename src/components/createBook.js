@@ -75,7 +75,6 @@ function CreateBookForm() {
         err.inner.forEach((e) => {
           formErrors[e.path] = e.message;
         });
-        // setErrors(formErrors);
       } else {
         // Extract error from response
         let errorMsg = err.response?.data?.errors || "Unknown error";
@@ -86,8 +85,7 @@ function CreateBookForm() {
         }
 
         console.log("Error creating author:", errorMsg);
-        // alert(`Failed to create author: ${errorMsg}`);
-        setErrors(errorMsg); // or setErrors({ general: errorMsg }) for consistency
+        setErrors(errorMsg);
       }
     } finally {
       setSubmitting(false);

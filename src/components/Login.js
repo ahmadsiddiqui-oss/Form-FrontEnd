@@ -69,7 +69,6 @@ function Login() {
             onChange={handleChange}
             style={{
               ...styles.input,
-              // borderRadius: "5px",
               border: "none",
               width: "100%",
             }}

@@ -8,13 +8,8 @@ function AuthorForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    // other fields...
   });
   const [file, setFile] = useState(null);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]); // single file
@@ -25,7 +20,7 @@ function AuthorForm() {
 
     // Create FormData object
     const data = new FormData();
-    data.append("myFile", file); // must match multer field name
+    data.append("myFile", file);
     data.append("name", formData.name);
     data.append("email", formData.email);
     console.log(data, file, formData.name, formData.email);

@@ -162,7 +162,6 @@ function BooksTable() {
         </select>
         <button
           style={{
-            // padding: "10px 25px",
             backgroundColor: "springGreen",
             border: "none",
             borderRadius: "5px",

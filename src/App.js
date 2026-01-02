@@ -5,7 +5,7 @@ import CreateBookForm from "./components/createBook";
 import CreateAuthorForm from "./components/createAuthor";
 import BooksTable from "./components/updateBook";
 import AuthorsTable from "./components/updateAuthor";
-import ProtectedRoute from "./components/ProtectedRoute"; // import it
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/Login";
 import Signup from "./components/signUp";
 import ForgotPassword from "./components/ForgetPassword";

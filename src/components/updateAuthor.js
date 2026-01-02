@@ -29,10 +29,6 @@ function AuthorsTable() {
     prevPage: null,
     nextPage: null,
   });
-  // console.log(authors, setAuthors,loading, setLoading, selectedAuthor, setSelectedAuthor, page, setPage, limit, setLimit, meta, setMeta, "Frontendsss");
-
-  // const [authorForm, setAuthorForm] = useState({ name: "", email: "" });
-  // const [errors, setErrors] = useState("");
 
   const authorUpdateSchema = yup.object().shape({
     name: yup.string().required("Name is required"),
@@ -161,7 +157,6 @@ function AuthorsTable() {
         </select>
         <button
           style={{
-            // padding: "10px 25px",
             backgroundColor: "springGreen",
             border: "none",
             borderRadius: "5px",

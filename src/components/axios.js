@@ -26,11 +26,6 @@ api.interceptors.response.use(
       localStorage.removeItem("authToken");
       window.location.href = "/login";
     }
-    // if(error.response.data.error === 'Invalid or expired token') {
-    //   localStorage.removeItem("authToken");
-    //   window.location.href = "/login";
-    // }
-    //   console.log("API Error:", error.response);
     return Promise.reject(error);
   }
 );
