@@ -161,14 +161,12 @@ function MainPage() {
           <Offcanvas.Title className="fw-bold">Quick Actions</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body style={{ padding: "20px" }}>
-          {/* Read Dropdown Section */}
-          {(permissions.includes("read_author") ||
-            permissions.includes("read_book") ||
-            permissions.includes("read_user")) && (
+          {/* Author Dropdown Section */}
+          {permissions.includes("read_author") && (
             <div className="mb-4">
               <Button
                 variant="info"
-                className="w-100 text-start fw-bold mb-2"
+                className="w-100 text-start fw-bold mb-2 text-white"
                 style={{
                   borderRadius: "8px",
                   padding: "12px 16px",
@@ -180,9 +178,23 @@ function MainPage() {
                     dropdown.style.display === "none" ? "block" : "none";
                 }}
               >
-                📖 Read
+                Authors
               </Button>
               <div style={{ paddingLeft: "15px", display: "none" }}>
+                {permissions.includes("create_author") && (
+                  <Button
+                    variant="outline-info"
+                    size="sm"
+                    className="w-100 text-start mb-2"
+                    onClick={() => handleNavigation("/author")}
+                    style={{
+                      borderRadius: "6px",
+                      padding: "10px 15px",
+                    }}
+                  >
+                    ➕ Create Authors
+                  </Button>
+                )}
                 {permissions.includes("read_author") && (
                   <Button
                     variant="outline-info"
@@ -194,35 +206,7 @@ function MainPage() {
                       padding: "10px 15px",
                     }}
                   >
-                    👤 View/Edit Authors
-                  </Button>
-                )}
-                {permissions.includes("read_book") && (
-                  <Button
-                    variant="outline-info"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/updateBook")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    📚 View/Edit Books
-                  </Button>
-                )}
-                {permissions.includes("create_user") && (
-                  <Button
-                    variant="outline-info"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/users")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    👥 View Users
+                    📚 Update Authors
                   </Button>
                 )}
               </div>
@@ -230,9 +214,7 @@ function MainPage() {
           )}
 
           {/* Write Dropdown Section */}
-          {(permissions.includes("create_author") ||
-            permissions.includes("create_book") ||
-            permissions.includes("read_user")) && (
+          {permissions.includes("read_book") && (
             <div className="mb-4">
               <Button
                 variant="success"
@@ -248,23 +230,9 @@ function MainPage() {
                     dropdown.style.display === "none" ? "block" : "none";
                 }}
               >
-                ✍️ Write
+                ✍️ Books
               </Button>
               <div style={{ paddingLeft: "15px", display: "none" }}>
-                {permissions.includes("create_author") && (
-                  <Button
-                    variant="outline-success"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/author")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    ➕ Create Author
-                  </Button>
-                )}
                 {permissions.includes("create_book") && (
                   <Button
                     variant="outline-success"
@@ -279,9 +247,61 @@ function MainPage() {
                     ➕ Create Book
                   </Button>
                 )}
-                {permissions.includes("read_user") && (
+                {permissions.includes("read_book") && (
                   <Button
                     variant="outline-success"
+                    size="sm"
+                    className="w-100 text-start mb-2"
+                    onClick={() => handleNavigation("/updateBook")}
+                    style={{
+                      borderRadius: "6px",
+                      padding: "10px 15px",
+                    }}
+                  >
+                    📚 View Books
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* User Dropdown Section */}
+          {permissions.includes("read_user") && (
+            <div className="mb-4">
+              <Button
+                variant="warning"
+                className="w-100 text-start fw-bold mb-2 text-white"
+                style={{
+                  borderRadius: "8px",
+                  padding: "12px 16px",
+                  fontSize: "18px",
+                }}
+                onClick={(e) => {
+                  const dropdown = e.currentTarget.nextElementSibling;
+                  dropdown.style.display =
+                    dropdown.style.display === "none" ? "block" : "none";
+                }}
+              >
+                Users
+              </Button>
+              <div style={{ paddingLeft: "15px", display: "none" }}>
+                {permissions.includes("read_user") && (
+                  <Button
+                    variant="outline-warning"
+                    size="sm"
+                    className="w-100 text-start mb-2"
+                    onClick={() => handleNavigation("/users")}
+                    style={{
+                      borderRadius: "6px",
+                      padding: "10px 15px",
+                    }}
+                  >
+                    👥 View Users
+                  </Button>
+                )}
+                {permissions.includes("read_user") && (
+                  <Button
+                    variant="outline-warning"
                     size="sm"
                     className="w-100 text-start mb-2"
                     onClick={() => handleNavigation("/file")}
@@ -302,7 +322,7 @@ function MainPage() {
             <div className="mb-4">
               <Button
                 variant="danger"
-                className="w-100 text-start fw-bold mb-2"
+                className="w-100 text-start fw-bold mb-2 text-white"
                 style={{
                   borderRadius: "8px",
                   padding: "12px 16px",
