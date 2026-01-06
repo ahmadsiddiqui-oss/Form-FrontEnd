@@ -38,7 +38,6 @@ function CreateAuthorForm() {
 
       const res = await api.post("/authorRoutes", formData);
       toast("Author created successfully!");
-      console.log(res.data);
 
       // Reset form
       setFormData({ name: "", email: "" });

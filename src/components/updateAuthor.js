@@ -60,7 +60,6 @@ function AuthorsTable() {
             params: { page, limit },
           }
         );
-        console.log(res.data.data, page, limit, "res.data");
         setAuthors(res.data.data || []);
         setMeta(res.data.meta || {});
       } catch (err) {
@@ -77,7 +76,6 @@ function AuthorsTable() {
   useEffect(() => {
     fetchAuthors(page, limit, sort, order);
   }, [page, limit, sort, order, fetchAuthors]);
-  console.log(page, limit, sort, order, "page, limit");
   // Sync form when a new author is selected
   useEffect(() => {
     if (selectedAuthor) {
@@ -89,7 +87,6 @@ function AuthorsTable() {
   }, [selectedAuthor, reset]);
 
   const handleUpdate = async (data) => {
-    console.log(data, "data");
     if (!selectedAuthor) return;
     try {
       const res = await api.put(`/authorRoutes/${selectedAuthor.id}`, data);
@@ -108,7 +105,6 @@ function AuthorsTable() {
   console.log(errors, getValues());
 
   const handleDelete = async (id) => {
-    console.log(id, "id <<Error>>");
     if (!window.confirm("Are you sure you want to delete this author?")) return;
     try {
       await api.delete(`/authorRoutes/${id}`);

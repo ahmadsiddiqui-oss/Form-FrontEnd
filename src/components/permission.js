@@ -40,9 +40,6 @@ const UserPermissionsModal = ({ show, onClose, userId, userName }) => {
       const rolePerms = roleData?.Permissions || roleData?.permissions || [];
       setRolePermissions(rolePerms.map((p) => String(p.id)));
       setUserRoleName(roleData?.name || roleData?.Name || "No Role");
-
-      console.log("Role Permissions Map:", rolePerms);
-      console.log("Direct Permissions Map:", directPerms);
     } catch (error) {
       console.error("Error fetching permissions:", error);
     } finally {

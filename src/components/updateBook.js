@@ -65,7 +65,6 @@ function BooksTable() {
         const res = await api.get(
           `/bookRoutes?page=${page}&limit=${limit}&search=${search}&sort=${sort}&order=${order}`
         );
-        console.log(res.data.data, page, limit, "res.data");
         setBooks(res.data.data || []);
         setMeta(res.data.meta || {});
       } catch (err) {
@@ -82,7 +81,6 @@ function BooksTable() {
   useEffect(() => {
     fetchBooks(page, limit, sort, order);
   }, [page, limit, sort, order, fetchBooks]);
-  console.log(page, limit, sort, order, "page, limit");
 
   // Populate form when a book is selected
   useEffect(() => {

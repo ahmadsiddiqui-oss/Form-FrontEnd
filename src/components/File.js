@@ -24,7 +24,6 @@ function AuthorForm() {
     data.append("myFile", file);
     data.append("name", formData.name);
     data.append("email", formData.email);
-    console.log(data, file, formData.name, formData.email);
     // append other fields as needed
 
     try {
@@ -35,7 +34,6 @@ function AuthorForm() {
         },
       });
 
-      console.log(res.data);
       // get user from local storage
       const user = JSON.parse(localStorage.getItem("user"));
       user.profileImage = {filename: res.data.profileImage.filename};

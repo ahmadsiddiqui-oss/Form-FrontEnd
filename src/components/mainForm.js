@@ -102,7 +102,6 @@ function MainPage() {
       localStorage.removeItem("user");
       navigate("/login");
     } catch (err) {
-      console.log(err.response?.data);
       toast.error(err.response?.data?.error || "Logout failed");
     }
   };

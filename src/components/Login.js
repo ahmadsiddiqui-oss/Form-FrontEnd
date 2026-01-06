@@ -22,7 +22,6 @@ function Login() {
 
   try {
     const res = await api.post("/authRoutes/login", credentials);
-    console.log(res.data, "resData.");
 
     if (res.data.user) {
       localStorage.setItem("auth", "true");
