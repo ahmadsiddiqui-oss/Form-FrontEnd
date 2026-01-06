@@ -5,12 +5,15 @@ import api from "./axios";
 import styles from "./Css";
 import CustomModal from "./modal";
 import { toast } from "react-toastify";
+import { getUserPermissions } from "./auth";
 
 const UsersTable = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const permissions = getUserPermissions();
+  const canWrite = permissions.includes("create_user");
 
   // Selection/Edit States
   const [showEditModal, setShowEditModal] = useState(false);
@@ -172,7 +175,8 @@ const UsersTable = () => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
-                <th>Actions</th>
+                {/* <th>Actions</th> */}
+                {canWrite && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -183,7 +187,8 @@ const UsersTable = () => {
                   <td>
                     <Badge bg="info">{user.Role?.name || "No Role"}</Badge>
                   </td>
-                  <td>
+                  {canWrite &&(
+                    <td>
                     <div className="d-flex gap-2">
                       <Button
                         variant="outline-primary"
@@ -201,6 +206,7 @@ const UsersTable = () => {
                       </Button>
                     </div>
                   </td>
+                  )}
                 </tr>
               ))}
             </tbody>

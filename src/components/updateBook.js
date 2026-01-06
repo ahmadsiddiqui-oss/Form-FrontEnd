@@ -143,7 +143,7 @@ function BooksTable() {
           🏠 Home
         </button>
       </h2>
-      <h3>
+      <h4>
         <input
           type="text"
           placeholder="Search book..."
@@ -172,7 +172,7 @@ function BooksTable() {
         >
           Search Author
         </button>
-      </h3>
+      </h4>
       <table
         border="1"
         cellPadding="10"

@@ -108,7 +108,7 @@ function Signup() {
         <select
           name="role"
           onChange={handleChange}
-          value={user.role.name}
+          value={user.role}
           style={styles.input}
           // required
         >

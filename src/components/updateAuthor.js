@@ -24,6 +24,7 @@ function AuthorsTable() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("createdAt");
   const [order, setOrder] = useState("ASC");
+
   const [meta, setMeta] = useState({
     page: 1,
     totalPages: 0,
@@ -138,7 +139,7 @@ function AuthorsTable() {
           🏠 Home
         </button>
       </h2>
-      <h3>
+      <h4>
         <input
           type="text"
           placeholder="Search author..."
@@ -167,7 +168,7 @@ function AuthorsTable() {
         >
           Search Author
         </button>
-      </h3>
+      </h4>
       <table
         border="1"
         cellPadding="10"
