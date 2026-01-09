@@ -311,181 +311,79 @@ function MainPage() {
           <Offcanvas.Title className="fw-bold">Quick Actions</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body style={{ padding: "20px" }}>
-          {/* Author Dropdown Section */}
+          {/* Author Button */}
           {permissions.includes("read_author") && (
-            <div className="mb-4">
+            <div className="mb-3">
               <Button
                 variant="info"
-                className="w-100 text-start fw-bold mb-2 text-white"
+                className="w-100 text-start fw-bold mb-2 text-white shadow-sm"
                 style={{
-                  borderRadius: "8px",
-                  padding: "12px 16px",
+                  borderRadius: "10px",
+                  padding: "14px 18px",
                   fontSize: "16px",
+                  transition: "all 0.3s ease",
                 }}
-                onClick={(e) => {
-                  const dropdown = e.currentTarget.nextElementSibling;
-                  dropdown.style.display =
-                    dropdown.style.display === "none" ? "block" : "none";
-                }}
+                onClick={() => handleNavigation("/updateAuthor")}
               >
-                Authors
+                📚 Authors
               </Button>
-              <div style={{ paddingLeft: "15px", display: "none" }}>
-                {permissions.includes("create_author") && (
-                  <Button
-                    variant="outline-info"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/author")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    ➕ Create Authors
-                  </Button>
-                )}
-                {permissions.includes("read_author") && (
-                  <Button
-                    variant="outline-info"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/updateAuthor")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    📚 Update Authors
-                  </Button>
-                )}
-              </div>
             </div>
           )}
 
-          {/* Write Dropdown Section */}
+          {/* Books Button */}
           {permissions.includes("read_book") && (
-            <div className="mb-4">
+            <div className="mb-3">
               <Button
                 variant="success"
-                className="w-100 text-start fw-bold mb-2"
+                className="w-100 text-start fw-bold mb-2 shadow-sm"
                 style={{
-                  borderRadius: "8px",
-                  padding: "12px 16px",
+                  borderRadius: "10px",
+                  padding: "14px 18px",
                   fontSize: "16px",
+                  transition: "all 0.3s ease",
                 }}
-                onClick={(e) => {
-                  const dropdown = e.currentTarget.nextElementSibling;
-                  dropdown.style.display =
-                    dropdown.style.display === "none" ? "block" : "none";
-                }}
+                onClick={() => handleNavigation("/updateBook")}
               >
                 ✍️ Books
               </Button>
-              <div style={{ paddingLeft: "15px", display: "none" }}>
-                {permissions.includes("create_book") && (
-                  <Button
-                    variant="outline-success"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/book")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    ➕ Create Book
-                  </Button>
-                )}
-                {permissions.includes("read_book") && (
-                  <Button
-                    variant="outline-success"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/updateBook")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    📚 View Books
-                  </Button>
-                )}
-              </div>
             </div>
           )}
 
-          {/* User Dropdown Section */}
+          {/* User Button */}
           {permissions.includes("read_user") && (
-            <div className="mb-4">
+            <div className="mb-3">
               <Button
                 variant="warning"
-                className="w-100 text-start fw-bold mb-2 text-white"
+                className="w-100 text-start fw-bold mb-2 text-white shadow-sm"
                 style={{
-                  borderRadius: "8px",
-                  padding: "12px 16px",
-                  fontSize: "18px",
+                  borderRadius: "10px",
+                  padding: "14px 18px",
+                  fontSize: "16px",
+                  transition: "all 0.3s ease",
                 }}
-                onClick={(e) => {
-                  const dropdown = e.currentTarget.nextElementSibling;
-                  dropdown.style.display =
-                    dropdown.style.display === "none" ? "block" : "none";
-                }}
+                onClick={() => handleNavigation("/users")}
               >
-                Users
+                👥 Users
               </Button>
-              <div style={{ paddingLeft: "15px", display: "none" }}>
-                {permissions.includes("read_user") && (
-                  <Button
-                    variant="outline-warning"
-                    size="sm"
-                    className="w-100 text-start mb-2"
-                    onClick={() => handleNavigation("/users")}
-                    style={{
-                      borderRadius: "6px",
-                      padding: "10px 15px",
-                    }}
-                  >
-                    👥 View Users
-                  </Button>
-                )}
-              </div>
             </div>
           )}
 
-          {/* Permissions Dropdown Section */}
+          {/* Permissions Button */}
           {permissions.includes("manage_permissions") && (
-            <div className="mb-4">
+            <div className="mb-3">
               <Button
                 variant="danger"
-                className="w-100 text-start fw-bold mb-2 text-white"
+                className="w-100 text-start fw-bold mb-2 text-white shadow-sm"
                 style={{
-                  borderRadius: "8px",
-                  padding: "12px 16px",
+                  borderRadius: "10px",
+                  padding: "14px 18px",
                   fontSize: "16px",
+                  transition: "all 0.3s ease",
                 }}
-                onClick={(e) => {
-                  const dropdown = e.currentTarget.nextElementSibling;
-                  dropdown.style.display =
-                    dropdown.style.display === "none" ? "block" : "none";
-                }}
+                onClick={() => handleNavigation("/permission")}
               >
                 🛡️ Permissions
               </Button>
-              <div style={{ paddingLeft: "15px", display: "none" }}>
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  className="w-100 text-start mb-2"
-                  onClick={() => handleNavigation("/permission")}
-                  style={{
-                    borderRadius: "6px",
-                    padding: "10px 15px",
-                  }}
-                >
-                  ⚙️ Manage Permissions
-                </Button>
-              </div>
             </div>
           )}
 

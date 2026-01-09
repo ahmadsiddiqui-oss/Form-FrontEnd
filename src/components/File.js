@@ -13,7 +13,7 @@ function AuthorForm() {
   const [file, setFile] = useState(null);
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]); // single file
+    setFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {

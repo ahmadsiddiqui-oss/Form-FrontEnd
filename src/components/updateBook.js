@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CustomModal from "./modal";
-import { Button } from "react-bootstrap";
+import { Button, Card, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ function BooksTable() {
   const [page, setPage] = useState(1);
   const [limit] = useState(2);
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState("createdAt");
   const [order, setOrder] = useState("DESC");
   const [meta, setMeta] = useState({
@@ -120,129 +121,345 @@ function BooksTable() {
     }
   };
 
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  const handleCreateBook = async (data) => {
+    try {
+      await api.post("/bookRoutes", data);
+      toast.success("Book created successfully!");
+      setShowCreateModal(false);
+      reset();
+      fetchBooks(page, limit, sort, order);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.error || "Failed to create book");
+    }
+  };
+
   if (loading) return <p>Loading books...</p>;
 
-  return (
-    <div style={{ maxWidth: "1000px", margin: "20px auto" }}>
-      <h2 style={{ display: "flex", justifyContent: "space-between" }}>
-        Books....!
-        <button
-          style={{
-            display: "flex",
-            padding: "10px 25px",
-            backgroundColor: "peachpuff",
-            border: "none",
-            marginLeft: "186px",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-          onClick={() => navigate("/main")}
-        >
-          🏠 Home
-        </button>
-      </h2>
-      <h4>
-        <input
-          type="text"
-          placeholder="Search book..."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1); // reset page
-          }}
-        />
-        <select value={sort} onChange={(e) => setSort(e.target.value)}>
-          <option value="createdAt">Created Date</option>
-          <option value="name">Name</option>
-        </select>
-        <select value={order} onChange={(e) => setOrder(e.target.value)}>
-          <option value="DESC">DESC</option>
-          <option value="ASC">ASC</option>
-        </select>
-        <button
-          style={{
-            backgroundColor: "springGreen",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-          onClick={() => fetchBooks()}
-        >
-          Search Author
-        </button>
-      </h4>
-      <table
-        border="1"
-        cellPadding="10"
-        style={{ width: "100%", textAlign: "left" }}
-      >
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>ISBN</th>
-            <th>Published Date</th>
-            <th>Author ID</th>
-            {canWrite && <th>Actions</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {books.map((b) => (
-            <tr key={b.id}>
-              <td>{b.id}</td>
-              <td>{b.title}</td>
-              <td>{b.isbn}</td>
-              <td>{b.publishedDate.toString().split("T")[0]}</td>
-              <td>{b.authorId}</td>
-              {canWrite && (
-                <td>
-                  <button
-                    style={{
-                      padding: "6px 25px",
-                      backgroundColor: "#f86e48ff",
-                      border: "none",
-                      borderRadius: "5px",
-                    }}
-                    onClick={() => setSelectedBook(b)}
-                  >
-                    Edit
-                  </button>{" "}
-                  <Button variant="primary" onClick={() => handleDelete(b.id)}>
-                    Delete
-                  </Button>
-                </td>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div style={{ marginTop: "20px", textAlign: "center" }}>
-        <ul className="pagination justify-content-center">
-          <li className={`page-item ${!meta?.prevPage ? "disabled" : ""}`}>
-            <Button
-              variant="link"
-              className="page-link"
-              onClick={() => setPage(meta?.prevPage)}
-              disabled={!meta?.prevPage}
-            >
-              Previous
-            </Button>
-          </li>
+  if (!permissions.includes("read_book")) {
+    return (
+      <div className="container mt-5">
+        <div className="alert alert-danger">
+          You do not have permission to view books.
+        </div>
+        <Button onClick={() => navigate("/main")}>Go Home</Button>
+      </div>
+    );
+  }
 
-          <span style={{ margin: "0 10px", alignSelf: "center" }}>
-            Page {meta.page} of {meta.totalPages}
-          </span>
-          <li className={`page-item ${!meta?.nextPage ? "disabled" : ""}`}>
+  return (
+    <div
+      style={{
+        backgroundColor: "#f0f2f5",
+        minHeight: "100vh",
+        padding: "40px 20px",
+      }}
+    >
+      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        {/* Header Section */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 className="fw-bold text-dark m-0">
+              <span style={{ color: "#48bb78" }}>📚</span> Book Management
+            </h2>
+            <p className="text-muted mb-0">
+              Browse, search, and edit your library's collection
+            </p>
+          </div>
+          <div className="d-flex gap-2">
+            {permissions.includes("create_book") && (
+              <Button
+                variant="success"
+                onClick={() => {
+                  reset({
+                    title: "",
+                    isbn: "",
+                    publishedDate: "",
+                    authorId: "",
+                  });
+                  setShowCreateModal(true);
+                }}
+                className="shadow-sm px-4 fw-bold"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #48bb78 0%, #38a169 100%)",
+                  border: "none",
+                  borderRadius: "8px",
+                }}
+              >
+                ➕ Add New Book
+              </Button>
+            )}
             <Button
-              variant="link"
-              className="page-link"
-              onClick={() => setPage(meta?.nextPage)}
-              disabled={!meta?.nextPage}
+              variant="outline-secondary"
+              className="shadow-sm px-4 fw-bold"
+              style={{ borderRadius: "8px" }}
+              onClick={() => navigate("/main")}
             >
-              Next
+              🏠 Home
             </Button>
-          </li>
-        </ul>
+          </div>
+        </div>
+
+        {/* Filters Card */}
+        <Card
+          className="border-0 shadow-sm mb-4"
+          style={{ borderRadius: "12px" }}
+        >
+          <Card.Body className="p-3">
+            <div className="row g-3">
+              <div className="col-md-5">
+                <div className="input-group">
+                  <span className="input-group-text bg-white border-end-0 text-muted">
+                    🔍
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-start-0 ps-0"
+                    placeholder="Search by title or ISBN..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        setSearch(searchInput);
+                        setPage(1);
+                      }
+                    }}
+                    style={{ borderRadius: "0 8px 8px 0", boxShadow: "none" }}
+                  />
+                </div>
+              </div>
+              <div className="col-md-2">
+                <select
+                  className="form-select"
+                  style={{ borderRadius: "8px", boxShadow: "none" }}
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                >
+                  <option value="createdAt">Sort by: Date</option>
+                  <option value="title">Sort by: Title</option>
+                </select>
+              </div>
+              <div className="col-md-2">
+                <select
+                  className="form-select"
+                  style={{ borderRadius: "8px", boxShadow: "none" }}
+                  value={order}
+                  onChange={(e) => setOrder(e.target.value)}
+                >
+                  <option value="DESC">Descending</option>
+                  <option value="ASC">Ascending</option>
+                </select>
+              </div>
+              <div className="col-md-3 d-flex gap-2">
+                <Button
+                  variant="dark"
+                  className="w-100 fw-bold"
+                  style={{ borderRadius: "8px" }}
+                  onClick={() => {
+                    setSearch(searchInput);
+                    setPage(1);
+                  }}
+                >
+                  Search
+                </Button>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+
+        {/* Table Card */}
+        <Card
+          className="border-0 shadow-sm"
+          style={{ borderRadius: "12px", overflow: "hidden" }}
+        >
+          <div className="table-responsive">
+            <table className="table table-hover align-middle mb-0">
+              <thead className="bg-light text-muted">
+                <tr>
+                  <th
+                    className="ps-4 py-3"
+                    style={{
+                      fontSize: "0.85rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    Book Details
+                  </th>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "0.85rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    ISBN
+                  </th>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "0.85rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    Published
+                  </th>
+                  <th
+                    className="py-3"
+                    style={{
+                      fontSize: "0.85rem",
+                      textTransform: "uppercase",
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    Author ID
+                  </th>
+                  {canWrite && (
+                    <th
+                      className="pe-4 text-end py-3"
+                      style={{
+                        fontSize: "0.85rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      Actions
+                    </th>
+                  )}
+                </tr>
+              </thead>
+              <tbody>
+                {books.length > 0 ? (
+                  books.map((b) => (
+                    <tr key={b.id}>
+                      <td className="ps-4">
+                        <div className="d-flex align-items-center">
+                          <div
+                            className="rounded d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                            style={{
+                              width: "40px",
+                              height: "50px",
+                              background:
+                                "linear-gradient(135deg, #48bb78 0%, #38a169 100%)",
+                              fontSize: "12px",
+                              marginRight: "12px",
+                              borderRadius: "4px",
+                            }}
+                          >
+                            📖
+                          </div>
+                          <div>
+                            <div className="fw-bold text-dark">{b.title}</div>
+                            <small className="text-muted">ID: #{b.id}</small>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <code className="text-secondary fw-bold">{b.isbn}</code>
+                      </td>
+                      <td>
+                        <span
+                          className="badge bg-light text-dark border p-2 fw-normal"
+                          style={{ borderRadius: "6px" }}
+                        >
+                          📅 {b.publishedDate?.toString().split("T")[0]}
+                        </span>
+                      </td>
+                      <td>
+                        <Badge bg="info" className="px-3">
+                          Author #{b.authorId}
+                        </Badge>
+                      </td>
+                      {canWrite && (
+                        <td className="pe-4 text-end">
+                          <Button
+                            variant="light"
+                            size="sm"
+                            className="me-2 text-primary shadow-sm"
+                            style={{
+                              borderRadius: "6px",
+                              backgroundColor: "#f0f7ff",
+                            }}
+                            onClick={() => setSelectedBook(b)}
+                            title="Edit"
+                          >
+                            ✏️
+                          </Button>
+                          <Button
+                            variant="light"
+                            size="sm"
+                            className="text-danger shadow-sm"
+                            style={{
+                              borderRadius: "6px",
+                              backgroundColor: "#fff5f5",
+                            }}
+                            onClick={() => handleDelete(b.id)}
+                            title="Delete"
+                          >
+                            🗑️
+                          </Button>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={canWrite ? 5 : 4} className="text-center py-5">
+                      <div className="text-muted">
+                        <div style={{ fontSize: "2rem" }}>🔦</div>
+                        <p className="mt-2 mb-0">
+                          No books found in the collection
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Section */}
+          <div className="p-4 bg-light border-top d-flex justify-content-between align-items-center">
+            <small className="text-muted fw-bold">
+              Showing page {meta.page} of {meta.totalPages || 1}
+            </small>
+            <nav>
+              <ul className="pagination pagination-sm mb-0 gap-1">
+                <li
+                  className={`page-item ${!meta?.prevPage ? "disabled" : ""}`}
+                >
+                  <Button
+                    variant="white"
+                    className="border shadow-sm px-3"
+                    onClick={() => setPage(meta?.prevPage)}
+                    disabled={!meta?.prevPage}
+                    style={{ borderRadius: "6px" }}
+                  >
+                    Previous
+                  </Button>
+                </li>
+                <li
+                  className={`page-item ${!meta?.nextPage ? "disabled" : ""}`}
+                >
+                  <Button
+                    variant="white"
+                    className="border shadow-sm px-3 ms-2"
+                    onClick={() => setPage(meta?.nextPage)}
+                    disabled={!meta?.nextPage}
+                    style={{ borderRadius: "6px" }}
+                  >
+                    Next
+                  </Button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </Card>
       </div>
 
       {selectedBook && (
@@ -299,6 +516,59 @@ function BooksTable() {
           cancelText="Close"
         />
       )}
+      {/* Create Modal */}
+      <CustomModal
+        show={showCreateModal}
+        modalId="createBookModal"
+        title="Create New Book"
+        body={
+          <form>
+            <div className="mb-3">
+              <label className="form-label">Title</label>
+              <input {...register("title")} className="form-control" />
+              {errors.title && (
+                <span className="text-danger">{errors.title.message}</span>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">ISBN</label>
+              <input {...register("isbn")} className="form-control" />
+              {errors.isbn && (
+                <span className="text-danger">{errors.isbn.message}</span>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Published Date</label>
+              <input
+                type="date"
+                {...register("publishedDate")}
+                className="form-control"
+              />
+              {errors.publishedDate && (
+                <span className="text-danger">
+                  {errors.publishedDate.message}
+                </span>
+              )}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Author ID</label>
+              <input
+                type="number"
+                {...register("authorId")}
+                className="form-control"
+              />
+              {errors.authorId && (
+                <span className="text-danger">{errors.authorId.message}</span>
+              )}
+            </div>
+          </form>
+        }
+        onClose={() => setShowCreateModal(false)}
+        onCancel={() => setShowCreateModal(false)}
+        onSubmit={handleSubmit(handleCreateBook)}
+        submitText="Create Book"
+        cancelText="Close"
+      />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Button, Spinner, Form, Badge } from "react-bootstrap";
+import { Table, Button, Spinner, Form, Badge, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import api from "./axios";
 import styles from "./Css";
@@ -29,14 +29,15 @@ const UsersTable = () => {
   // Pagination & Search
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [meta, setMeta] = useState({ page: 1, totalPages: 1 });
 
   const fetchUsers = React.useCallback(async () => {
     setLoading(true);
     try {
       const res = await api.get(
-        `/userRoutes?page=${page}&limit=${limit}&search=${searchTerm}`
+        `/userRoutes?page=${page}&limit=${limit}&search=${search}`
       );
       setUsers(res.data.data || []);
       setMeta(res.data.meta || { page: 1, totalPages: 1 });
@@ -45,7 +46,7 @@ const UsersTable = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, limit, searchTerm]);
+  }, [page, limit, search]);
 
   const fetchRoles = React.useCallback(async () => {
     setLoadingRoles(true);
@@ -142,93 +143,309 @@ const UsersTable = () => {
     </Form>
   );
 
-  return (
-    <div style={styles.container}>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 style={styles.title} className="m-0">
-          👥 User Management
-        </h2>
-        <Button variant="dark" onClick={() => navigate("/main")}>
-          🏠 Home
-        </Button>
+  if (loading && users.length === 0) {
+    return (
+      <div className="text-center py-5 mt-5">
+        <Spinner animation="border" variant="warning" />
+        <p className="mt-2 text-muted fw-bold">Loading User Directory...</p>
       </div>
+    );
+  }
 
-      <div className="mb-3 d-flex gap-2">
-        <Form.Control
-          type="text"
-          placeholder="Search by name or email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ maxWidth: "300px" }}
-        />
-      </div>
-
-      {loading ? (
-        <div className="text-center py-5">
-          <Spinner animation="border" />
-        </div>
-      ) : (
-        <>
-          <Table hover responsive bordered className="shadow-sm bg-white">
-            <thead className="bg-light">
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                {/* <th>Actions</th> */}
-                {canWrite && <th>Actions</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.name}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    <Badge bg="info">{user.Role?.name || "No Role"}</Badge>
-                  </td>
-                  {canWrite &&(
-                    <td>
-                    <div className="d-flex gap-2">
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        onClick={() => handleEditClick(user)}
-                      >
-                        ✏️ Edit
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleDelete(user.id)}
-                      >
-                        🗑️ Delete
-                      </Button>
-                    </div>
-                  </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-
-          {/* Pagination */}
-          <div className="d-flex justify-content-center gap-2 mt-3">
-            <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
-              Prev
-            </Button>
-            <span className="align-self-center">
-              Page {page} of {meta.totalPages}
-            </span>
+  if (!permissions.includes("read_user")) {
+    return (
+      <div className="container mt-5 text-center">
+        <Card
+          className="border-0 shadow-sm p-5"
+          style={{ borderRadius: "15px" }}
+        >
+          <div className="text-danger mb-3" style={{ fontSize: "3rem" }}>
+            🚫
+          </div>
+          <h3 className="fw-bold">Access Denied</h3>
+          <p className="text-muted">
+            You do not have permission to view the User Management section.
+          </p>
+          <div className="mt-4">
             <Button
-              disabled={page >= meta.totalPages}
-              onClick={() => setPage(page + 1)}
+              variant="dark"
+              onClick={() => navigate("/main")}
+              className="px-5 py-2 fw-bold"
+              style={{ borderRadius: "8px" }}
             >
-              Next
+              Go Home
             </Button>
           </div>
-        </>
-      )}
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style={{
+        backgroundColor: "#f0f2f5",
+        minHeight: "100vh",
+        padding: "40px 20px",
+      }}
+    >
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+        {/* Header Section */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 className="fw-bold text-dark m-0">
+              <span style={{ color: "#f6ad55" }}>👥</span> User Management
+            </h2>
+            <p className="text-muted mb-0">
+              View and manage system users and their roles
+            </p>
+          </div>
+          <Button
+            variant="outline-secondary"
+            className="shadow-sm px-4 fw-bold"
+            style={{ borderRadius: "8px" }}
+            onClick={() => navigate("/main")}
+          >
+            🏠 Home
+          </Button>
+        </div>
+
+        {/* Filters Card */}
+        <Card
+          className="border-0 shadow-sm mb-4"
+          style={{ borderRadius: "12px" }}
+        >
+          <Card.Body className="p-3">
+            <div className="row g-3">
+              <div className="col-md-9">
+                <div className="input-group">
+                  <span className="input-group-text bg-white border-end-0 text-muted">
+                    🔍
+                  </span>
+                  <input
+                    type="text"
+                    className="form-control border-start-0 ps-0"
+                    placeholder="Search by name or email..."
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        setSearch(searchInput);
+                        setPage(1);
+                      }
+                    }}
+                    style={{ borderRadius: "0 8px 8px 0", boxShadow: "none" }}
+                  />
+                </div>
+              </div>
+              <div className="col-md-3">
+                <Button
+                  variant="dark"
+                  className="w-100 fw-bold shadow-sm"
+                  style={{ borderRadius: "8px" }}
+                  onClick={() => {
+                    setSearch(searchInput);
+                    setPage(1);
+                  }}
+                >
+                  Search Users
+                </Button>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+
+        {/* Table Card */}
+        <Card
+          className="border-0 shadow-sm"
+          style={{ borderRadius: "12px", overflow: "hidden" }}
+        >
+          {loading ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" variant="warning" />
+            </div>
+          ) : (
+            <div className="table-responsive">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="bg-light text-muted">
+                  <tr>
+                    <th
+                      className="ps-4 py-3"
+                      style={{
+                        fontSize: "0.85rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      User Profile
+                    </th>
+                    <th
+                      className="py-3"
+                      style={{
+                        fontSize: "0.85rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      Email
+                    </th>
+                    <th
+                      className="py-3"
+                      style={{
+                        fontSize: "0.85rem",
+                        textTransform: "uppercase",
+                        letterSpacing: "1px",
+                      }}
+                    >
+                      Role
+                    </th>
+                    {canWrite && (
+                      <th
+                        className="pe-4 text-end py-3"
+                        style={{
+                          fontSize: "0.85rem",
+                          textTransform: "uppercase",
+                          letterSpacing: "1px",
+                        }}
+                      >
+                        Actions
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.length > 0 ? (
+                    users.map((user) => (
+                      <tr key={user.id}>
+                        <td className="ps-4">
+                          <div className="d-flex align-items-center">
+                            <div
+                              className="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
+                              style={{
+                                width: "40px",
+                                height: "40px",
+                                background:
+                                  "linear-gradient(135deg, #f6ad55 0%, #ed8936 100%)",
+                                fontSize: "14px",
+                                marginRight: "12px",
+                              }}
+                            >
+                              {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="fw-bold text-dark">
+                                {user.name}
+                              </div>
+                              <small className="text-muted">
+                                ID: #{user.id}
+                              </small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="text-dark">{user.email}</div>
+                        </td>
+                        <td>
+                          <Badge
+                            bg="light"
+                            className="text-dark border px-3 py-2 fw-normal"
+                            style={{ borderRadius: "6px" }}
+                          >
+                            🎭 {user.Role?.name || "No Role"}
+                          </Badge>
+                        </td>
+                        {canWrite && (
+                          <td className="pe-4 text-end">
+                            <div className="d-flex gap-2 justify-content-end">
+                              <Button
+                                variant="light"
+                                size="sm"
+                                className="text-primary shadow-sm"
+                                style={{
+                                  borderRadius: "6px",
+                                  backgroundColor: "#f0f7ff",
+                                }}
+                                onClick={() => handleEditClick(user)}
+                                title="Edit"
+                              >
+                                ✏️
+                              </Button>
+                              <Button
+                                variant="light"
+                                size="sm"
+                                className="text-danger shadow-sm"
+                                style={{
+                                  borderRadius: "6px",
+                                  backgroundColor: "#fff5f5",
+                                }}
+                                onClick={() => handleDelete(user.id)}
+                                title="Delete"
+                              >
+                                🗑️
+                              </Button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={canWrite ? 4 : 3}
+                        className="text-center py-5"
+                      >
+                        <div className="text-muted">
+                          <div style={{ fontSize: "2rem" }}>🔦</div>
+                          <p className="mt-2 mb-0">
+                            No users found matching your search
+                          </p>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Pagination Section */}
+          <div className="p-4 bg-light border-top d-flex justify-content-between align-items-center">
+            <small className="text-muted fw-bold">
+              Showing page {meta.page} of {meta.totalPages || 1}
+            </small>
+            <nav>
+              <ul className="pagination pagination-sm mb-0 gap-1">
+                <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                  <Button
+                    variant="white"
+                    className="border shadow-sm px-3"
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                    style={{ borderRadius: "6px" }}
+                  >
+                    Previous
+                  </Button>
+                </li>
+                <li
+                  className={`page-item ${
+                    page >= meta.totalPages ? "disabled" : ""
+                  }`}
+                >
+                  <Button
+                    variant="white"
+                    className="border shadow-sm px-3 ms-2"
+                    onClick={() => setPage(page + 1)}
+                    disabled={page >= meta.totalPages}
+                    style={{ borderRadius: "6px" }}
+                  >
+                    Next
+                  </Button>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </Card>
+      </div>
 
       <CustomModal
         show={showEditModal}

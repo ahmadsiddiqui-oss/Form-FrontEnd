@@ -12,17 +12,13 @@ function Login() {
     email: "",
     password: "",
   });
-
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
-
   const handleLogin = async (e) => {
   e.preventDefault();
-
   try {
     const res = await api.post("/authRoutes/login", credentials);
-
     if (res.data.user) {
       localStorage.setItem("auth", "true");
       localStorage.setItem("authToken", res.data.token);
@@ -35,7 +31,6 @@ function Login() {
     toast.error("Frontend Error..!" + (err.response?.data?.error || "Login failed"));
   }
 };
-
 
   return (
     <div style={styles.container}>
