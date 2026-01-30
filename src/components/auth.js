@@ -11,5 +11,5 @@ export function getUserRole() {
 export function getUserPermissions() {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) return null;
-  return user.permissions || [];
+  return user.directUserPermissions || user.permissions || [];
 }

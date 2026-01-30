@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers, deleteUser } from "../reducers/userReducer";
 import { Table, Button, Spinner, Form, Badge, Card } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import api from "./axios";
@@ -9,8 +11,12 @@ import { getUserPermissions } from "./auth";
 
 const UsersTable = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { data: users, loading, meta } = useSelector((state) => state.users);
+  // const [users, setUsers] = useState([]); // Moved to Redux
+  // const [loading, setLoading] = useState(true); // Moved to Redux
+  // const [meta, setMeta] = useState({ page: 1, totalPages: 1 }); // Moved to Redux
+
   const [submitting, setSubmitting] = useState(false);
   const permissions = getUserPermissions();
   const canWrite = permissions.includes("create_user");
@@ -31,22 +37,11 @@ const UsersTable = () => {
   const [limit] = useState(5);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
-  const [meta, setMeta] = useState({ page: 1, totalPages: 1 });
+  // const [meta, setMeta] = useState({ page: 1, totalPages: 1 }); // Moved to Redux
 
-  const fetchUsers = React.useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await api.get(
-        `/userRoutes?page=${page}&limit=${limit}&search=${search}`
-      );
-      setUsers(res.data.data || []);
-      setMeta(res.data.meta || { page: 1, totalPages: 1 });
-    } catch (err) {
-      console.error("Error fetching users:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, [page, limit, search]);
+  const handleFetchUsers = React.useCallback(() => {
+    dispatch(fetchUsers({ page, limit, search }));
+  }, [dispatch, page, limit, search]);
 
   const fetchRoles = React.useCallback(async () => {
     setLoadingRoles(true);
@@ -61,17 +56,17 @@ const UsersTable = () => {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    handleFetchUsers();
+  }, [handleFetchUsers]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
-    try {
-      await api.delete(`/userRoutes/${id}`);
+    const result = await dispatch(deleteUser(id));
+    if (deleteUser.fulfilled.match(result)) {
       toast("User deleted successfully");
-      fetchUsers();
-    } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to delete user");
+      // fetchUsers(); // Reducer handles removal
+    } else {
+      toast.error(result.payload || "Failed to delete user");
     }
   };
 
@@ -93,7 +88,9 @@ const UsersTable = () => {
       await api.put(`/userRoutes/${selectedUser.id}`, editData);
       toast("User updated successfully");
       setShowEditModal(false);
-      fetchUsers();
+      toast("User updated successfully");
+      setShowEditModal(false);
+      handleFetchUsers();
     } catch (err) {
       toast.error(err.response?.data?.error || "Update failed");
     } finally {
