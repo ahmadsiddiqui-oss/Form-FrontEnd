@@ -14,8 +14,6 @@ function ProtectedRoute({ children, allowedRoles }) {
     // 2️⃣ Token decode
     const decoded = jwtDecode(token);
     const userRole = decoded.role;
-    console.log(userRole, decoded);
-
     // 3️⃣ Role allow hai ya nahi
     if (!allowedRoles.includes(userRole)) {
       return <Navigate to="/unauthorized" />;
@@ -30,14 +28,3 @@ function ProtectedRoute({ children, allowedRoles }) {
 
 export default ProtectedRoute;
 
-// import React from "react";
-// import { Navigate } from "react-router-dom";
-
-// function ProtectedRoute({ children }) {
-//   const isAuthenticated = localStorage.getItem("auth");
-
-//   // If logged in → show children, else redirect to /login,,
-//   return isAuthenticated == "true" ? children : <Navigate to="/login" />;
-// }
-
-// export default ProtectedRoute;

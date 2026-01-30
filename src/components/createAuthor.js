@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import api from "./axios";
+import { toast } from "react-toastify";
 
 // Define Yup validation schema
 const schema = yup.object().shape({
@@ -36,7 +37,7 @@ function CreateAuthorForm() {
       await schema.validate(formData, { abortEarly: false });
 
       const res = await api.post("/authorRoutes", formData);
-      alert("Author created successfully!");
+      toast("Author created successfully!");
       console.log(res.data);
 
       // Reset form
@@ -48,19 +49,15 @@ function CreateAuthorForm() {
         err.inner.forEach((e) => {
           formErrors[e.path] = e.message;
         });
-        // setErrors(formErrors);
       } else {
         // Extract error from response
         let errorMsg = err.response?.data?.errors || "Unknown error";
-
         // Normalize: if it's an array, join; if string, keep as is
         if (Array.isArray(errorMsg)) {
           errorMsg = errorMsg.join(", ");
         }
-
         console.log("Error creating author:", errorMsg);
-        // alert(`Failed to create author: ${errorMsg}`);
-        setErrors(errorMsg); // or setErrors({ general: errorMsg }) for consistency
+        setErrors(errorMsg);
       }
     } finally {
       setSubmitting(false);

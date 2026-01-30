@@ -1,18 +1,16 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import MainPage from "./components/mainForm";
-import CreateBookForm from "./components/createBook";
-import CreateAuthorForm from "./components/createAuthor";
 import BooksTable from "./components/updateBook";
 import AuthorsTable from "./components/updateAuthor";
-import ProtectedRoute from "./components/ProtectedRoute"; // import it
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./components/Login";
 import Signup from "./components/signUp";
 import ForgotPassword from "./components/ForgetPassword";
 import ResetPassword from "./components/ResetPassword";
 import PublicRoute from "./components/PublicRoute";
 import Unauthorized from "./components/Unauthorised";
-import File from "./components/file";
+import File from "./components/File";
 import PermissionModal from "./components/permission";
 import UsersTable from "./components/users";
 
@@ -59,28 +57,6 @@ function App() {
               allowedRoles={["Admin", "Manager", "User", "HR", "Finance"]}
             >
               <MainPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/book"
-          element={
-            <ProtectedRoute
-              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
-            >
-              <CreateBookForm />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/author"
-          element={
-            <ProtectedRoute
-              allowedRoles={["Admin", "Manager", "HR", "Finance", "User"]}
-            >
-              <CreateAuthorForm />
             </ProtectedRoute>
           }
         />

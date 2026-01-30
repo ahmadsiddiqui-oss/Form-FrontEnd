@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import api from "./axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function AuthorForm() {
   const navigate = useNavigate();
@@ -8,16 +9,11 @@ function AuthorForm() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    // other fields...
   });
   const [file, setFile] = useState(null);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]); // single file
+    setFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
@@ -25,10 +21,9 @@ function AuthorForm() {
 
     // Create FormData object
     const data = new FormData();
-    data.append("myFile", file); // must match multer field name
+    data.append("myFile", file);
     data.append("name", formData.name);
     data.append("email", formData.email);
-    console.log(data, file, formData.name, formData.email);
     // append other fields as needed
 
     try {
@@ -39,17 +34,16 @@ function AuthorForm() {
         },
       });
 
-      console.log(res.data);
       // get user from local storage
       const user = JSON.parse(localStorage.getItem("user"));
       user.profileImage = {filename: res.data.profileImage.filename};
       localStorage.setItem("user", JSON.stringify(user));
       setFile(null);
       fileInputRef.current.value = "";
-      alert("Author added and file uploaded successfully!");
+      toast("Author added and file uploaded successfully!");
     } catch (err) {
       console.error(err.response ? err.response.data : err.message);
-      alert("Error uploading file");
+      toast.error("Error uploading file");
     }
   };
 

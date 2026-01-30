@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import ForgotPassword from "./ForgetPassword";
 import api from "./axios";
+import { toast } from "react-toastify";
 
 function Login() {
   const navigate = useNavigate();
@@ -11,30 +12,25 @@ function Login() {
     email: "",
     password: "",
   });
-
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
-
   const handleLogin = async (e) => {
   e.preventDefault();
-
   try {
     const res = await api.post("/authRoutes/login", credentials);
-    console.log(res.data, "resData.");
-
     if (res.data.user) {
       localStorage.setItem("auth", "true");
       localStorage.setItem("authToken", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       navigate("/main");
+      toast.success("Login successful");
     }
   } catch (err) {
     console.log(err.response?.data);
-    alert("Frontend Error..!" + (err.response?.data?.error || "Login failed"));
+    toast.error("Frontend Error..!" + (err.response?.data?.error || "Login failed"));
   }
 };
-
 
   return (
     <div style={styles.container}>
@@ -69,7 +65,6 @@ function Login() {
             onChange={handleChange}
             style={{
               ...styles.input,
-              // borderRadius: "5px",
               border: "none",
               width: "100%",
             }}

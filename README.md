@@ -68,8 +68,92 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Form-CRUD-
-# formbackend
-# formbackend
-# Form-FrontEnd
-# Form-FrontEnd
+# Redux Implementation Guide
+
+This project uses **Redux Toolkit** for global state management. Follow this workflow to manage state for new features (e.g., Users, Products).
+
+## 1. Create a Slice
+Create a new file in `src/features/` (e.g., `src/features/users.redux.js`). This file defines your state, async actions (thunks), and reducers.
+
+```javascript
+/* src/features/users.redux.js */
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../components/axios";
+
+// Async Thunk for fetching data
+export const fetchUsers = createAsyncThunk(
+  "users/fetchUsers",
+  async (params, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/userRoutes", { params });
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data);
+    }
+  }
+);
+
+const usersSlice = createSlice({
+  name: "users",
+  initialState: { data: [], loading: false, error: null },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchUsers.pending, (state) => { state.loading = true; })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload.data;
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+export default usersSlice.reducer;
+```
+
+## 2. Register in Store
+Import your new reducer in `src/redux/store.js` and add it to the `reducer` object.
+
+```javascript
+/* src/redux/store.js */
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "../features/signUp.redux";
+import usersReducer from "../features/users.redux"; // <--- Import
+
+export const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    users: usersReducer, // <--- Add here
+  },
+});
+```
+
+## 3. Use in Components
+Use `useDispatch` to trigger actions and `useSelector` to read state.
+
+```javascript
+/* src/components/users.js */
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "../features/users.redux";
+import { useEffect } from "react";
+
+const UsersTable = () => {
+  const dispatch = useDispatch();
+  const { data, loading } = useSelector((state) => state.users);
+
+  useEffect(() => {
+    dispatch(fetchUsers({ page: 1 }));
+  }, [dispatch]);
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <ul>
+      {data.map(user => <li key={user.id}>{user.name}</li>)}
+    </ul>
+  );
+};
+```

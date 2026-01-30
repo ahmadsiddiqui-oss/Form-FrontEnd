@@ -11,3 +11,60 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+/* Toast container spacing */
+.Toastify__toast-container {
+  padding: 12px;
+}
+
+/* Main toast box */
+.custom-toast {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff, #f9fafb);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  border-left: 6px solid transparent;
+  min-height: 64px;
+}
+
+/* Toast text */
+.custom-toast-body {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+/* Success toast */
+.Toastify__toast--success {
+  border-left-color: #22c55e;
+}
+
+/* Error toast */
+.Toastify__toast--error {
+  border-left-color: #ef4444;
+}
+
+/* Warning toast */
+.Toastify__toast--warning {
+  border-left-color: #f59e0b;
+}
+
+/* Info toast */
+.Toastify__toast--info {
+  border-left-color: #3b82f6;
+}
+
+/* Progress bar */
+.Toastify__progress-bar {
+  background: linear-gradient(90deg, #6366f1, #3b82f6);
+}
+
+/* Close button */
+.Toastify__close-button {
+  color: #6b7280;
+  opacity: 0.8;
+}
+
+.Toastify__close-button:hover {
+  color: #111827;
+}
